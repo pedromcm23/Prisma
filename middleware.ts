@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { auth } from "@/auth"
 
-export async function middleware(request: NextRequest) {
+export default auth((request) => {
   const path = request.nextUrl.pathname
   
-  // NOTE: This is a placeholder for the actual token extraction logic using NextAuth
-  // e.g., const token = await getToken({ req: request })
-  // const role = token?.role
-  
-  const isAuthenticated = false; // Replace with actual token check
-  type UserRole = 'HOST' | 'CUSTOMER';
-  const role: UserRole = 'CUSTOMER'; // Replace with actual role ('HOST' | 'CUSTOMER')
+  const isAuthenticated = !!request.auth;
+  const role = request.auth?.user?.role || 'CUSTOMER';
 
   const isHostRoute = path.startsWith('/host')
   const isCustomerRoute = path.startsWith('/customer')
@@ -18,7 +13,7 @@ export async function middleware(request: NextRequest) {
   // Login redirection based on role
   if (path === '/login' && isAuthenticated) {
     if (role === 'HOST') {
-      return NextResponse.redirect(new URL('/host/profile', request.url))
+      return NextResponse.redirect(new URL('/host/builder', request.url))
     }
     if (role === 'CUSTOMER') {
       return NextResponse.redirect(new URL('/search', request.url))
@@ -30,6 +25,8 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
+    // Allow HOSTs to access host routes. In a real app we might want strict enforcement,
+    // but for now we enforce role === 'HOST'
     if (role !== 'HOST') {
       return NextResponse.redirect(new URL('/search', request.url))
     }
@@ -41,12 +38,12 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
     if (role !== 'CUSTOMER') {
-      return NextResponse.redirect(new URL('/host/profile', request.url))
+      return NextResponse.redirect(new URL('/host/builder', request.url))
     }
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: [
