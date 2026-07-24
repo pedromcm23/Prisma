@@ -9,7 +9,8 @@ export async function middleware(request: NextRequest) {
   // const role = token?.role
   
   const isAuthenticated = false; // Replace with actual token check
-  const role = 'CUSTOMER'; // Replace with actual role ('HOST' | 'CUSTOMER')
+  type UserRole = 'HOST' | 'CUSTOMER';
+  const role: UserRole = 'CUSTOMER'; // Replace with actual role ('HOST' | 'CUSTOMER')
 
   const isHostRoute = path.startsWith('/host')
   const isCustomerRoute = path.startsWith('/customer')
