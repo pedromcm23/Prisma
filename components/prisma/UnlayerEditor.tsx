@@ -55,7 +55,6 @@ export function UnlayerEditor({ propertyId, onBack }: { propertyId: string, onBa
           projectId={Number(process.env.NEXT_PUBLIC_UNLAYER_PROJECT_ID) || undefined}
           options={{
             displayMode: 'web', // Force web mode
-            theme: 'light',
           }}
           style={{ minHeight: '100%', width: '100%' }}
         />
