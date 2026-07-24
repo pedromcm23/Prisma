@@ -34,3 +34,31 @@ export async function getProperties(options?: { take?: number }) {
     return [];
   }
 }
+
+export async function createProperty(name: string, description: string) {
+  // In a real app we'd get hostId from session
+  // For now we assume a dummy or find first user
+  const host = await prisma.user.findFirst({ where: { role: "HOST" } }) 
+    || await prisma.user.create({ data: { name: "Demo Host", email: "host@prisma.com", role: "HOST" } });
+
+  const property = await prisma.property.create({
+    data: {
+      name,
+      description,
+      hostId: host.id,
+    }
+  });
+
+  return property.id;
+}
+
+export async function savePropertyDesign(propertyId: string, designJson: any, html: string) {
+  await prisma.property.update({
+    where: { id: propertyId },
+    data: {
+      landingPageJson: designJson,
+      landingPageHtml: html,
+    }
+  });
+  return true;
+}
