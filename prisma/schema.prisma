@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  HOST
+  CUSTOMER
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  image         String?
+  role          Role           @default(CUSTOMER)
+  
+  // Relations
+  properties    Property[]     // For Hosts
+  bookings      Booking[]      // For Customers
+  rewardPoints  RewardPoint[]  // For Customers
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Property {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  hostId        String
+  host          User           @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  
+  // Unlayer landing page data
+  landingPageJson Json?
+  landingPageHtml String?      @db.Text
+  
+  bookings      Booking[]
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Booking {
+  id            String         @id @default(cuid())
+  propertyId    String
+  property      Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  customerId    String
+  customer      User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  startDate     DateTime
+  endDate       DateTime
+  status        String         @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model RewardPoint {
+  id            String         @id @default(cuid())
+  customerId    String
+  customer      User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  postLink      String
+  followerCount Int            @default(0)
+  pointsAwarded Int            @default(0)
+  status        String         @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
