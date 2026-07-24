@@ -37,9 +37,9 @@
   --color-ocean: var(--ocean);
   --color-cream: var(--cream);
   --color-ink: var(--ink);
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
-  --font-hand: "Caveat", cursive;
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-hand: var(--font-caveat), cursive;
   --shadow-hard: 4px 4px 0 0 var(--ink);
   --shadow-hard-sm: 3px 3px 0 0 var(--ink);
   --shadow-hard-lg: 6px 6px 0 0 var(--ink);
