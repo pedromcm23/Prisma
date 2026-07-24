@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Compass, Home, ArrowRight, Star, MapPin } from "lucide-react";
+import { getProperties } from "@/app/actions/property";
 
-export default function Landing() {
+export default async function Landing() {
+  const latestProperties = await getProperties({ take: 3 });
+
   return (
     <div className="min-h-screen">
       {/* Nav */}
@@ -77,9 +80,9 @@ export default function Landing() {
           </Link>
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {["Casa Amarela · Lisbon", "Olive Hill · Crete", "Casita Limón · Cadaqués"].map((n, i) => (
+          {latestProperties.map((p, i) => (
             <div
-              key={n}
+              key={p.slug}
               className={`polaroid ${["rotate-[-2deg]", "rotate-[1deg]", "rotate-[-1deg]"][i]}`}
             >
               <div className="tape" />
@@ -89,12 +92,12 @@ export default function Landing() {
                 } flex items-end p-3`}
               >
                 <div className="bg-white/90 border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-mustard" /> 4.9
+                  <Star className="w-3 h-3 fill-mustard" /> {p.rating}
                 </div>
               </div>
               <div className="mt-3 flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-primary" />
-                <p className="font-hand text-xl">{n}</p>
+                <p className="font-hand text-xl">{p.name} · {p.location}</p>
               </div>
             </div>
           ))}

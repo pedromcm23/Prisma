@@ -1,20 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Map, LayoutGrid, Star, MapPin, Search, Sparkles, ArrowRight, X } from "lucide-react";
 import { SAMPLE_LISTINGS, type Listing } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
+import { getProperties } from "@/app/actions/property";
 
 export default function GuestPortal() {
   const [view, setView] = useState<"grid" | "map">("grid");
   const [query, setQuery] = useState("");
   const [openListing, setOpenListing] = useState<Listing | null>(null);
+  
+  const [dbListings, setDbListings] = useState<Listing[]>(SAMPLE_LISTINGS);
 
-  const filtered = SAMPLE_LISTINGS.filter((l) => {
+  useEffect(() => {
+    getProperties().then((props) => {
+      if (props.length > 0) setDbListings(props);
+    }).catch(console.error);
+  }, []);
+
+  const filtered = dbListings.filter((l) => {
     if (!query.trim()) return true;
     const q = query.toLowerCase();
     return (
