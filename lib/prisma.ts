@@ -7,7 +7,7 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 export const prisma = new Proxy({} as PrismaClient, {
   get(_, prop) {
     if (!globalForPrisma.prisma) {
-      const connectionString = process.env.DATABASE_URL;
+      const connectionString = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL;
       if (!connectionString) {
         // Mock prisma during build if DATABASE_URL is missing
         const mockProxy: any = new Proxy(
