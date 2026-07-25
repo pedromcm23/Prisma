@@ -10,7 +10,11 @@ export const prisma = new Proxy({} as PrismaClient, {
       const connectionString = process.env.DATABASE_URL;
       if (!connectionString) {
         // Mock prisma during build if DATABASE_URL is missing
-        return () => Promise.resolve([]);
+        const mockProxy: any = new Proxy(
+          () => Promise.resolve([]),
+          { get: () => mockProxy }
+        );
+        return mockProxy;
       }
       const pool = new Pool({ connectionString });
       const adapter = new PrismaPg(pool);
