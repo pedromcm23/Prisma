@@ -2,9 +2,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Compass, Home, ArrowRight, Star, MapPin } from "lucide-react";
 import { getProperties } from "@/app/actions/property";
+import { auth } from "@/auth";
+import { UserNav } from "@/components/user-nav";
 
 export default async function Landing() {
   const latestProperties = await getProperties({ take: 3 });
+  const session = await auth();
 
   return (
     <div className="min-h-screen">
@@ -19,6 +22,15 @@ export default async function Landing() {
         <nav className="hidden sm:flex items-center gap-6 text-sm font-bold">
           <Link href="/search" className="hover:text-primary">Explore stays</Link>
           <Link href="/host/builder" className="hover:text-primary">For hosts</Link>
+          {session?.user ? (
+            <UserNav user={session.user} />
+          ) : (
+            <Link href="/api/auth/signin">
+              <Button className="h-9 px-4 rounded-xl bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm font-bold hover:bg-primary/90">
+                Sign In
+              </Button>
+            </Link>
+          )}
         </nav>
       </header>
 
