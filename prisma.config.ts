@@ -1,8 +1,8 @@
-import { defineConfig } from '@prisma/config'
+import { defineConfig, env } from '@prisma/config'
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   datasource: {
-    url: process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL,
+    url: env('POSTGRES_URL_NON_POOLING') || env('POSTGRES_PRISMA_URL') || env('POSTGRES_URL') || env('DATABASE_URL'),
   }
 })
