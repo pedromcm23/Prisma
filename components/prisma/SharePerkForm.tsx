@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Heart, Instagram, Upload, Check } from "lucide-react";
+import { Heart, Camera, Upload, Check } from "lucide-react";
 import { toast } from "sonner";
 import { submitGuestPerk } from "@/app/actions/perks";
 import type { Listing } from "@/lib/prisma-types";
@@ -120,7 +120,7 @@ export function SharePerkForm({ properties }: { properties: Listing[] }) {
             </div>
             <label className="block">
               <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                <Instagram className="w-3 h-3" /> Link to your post
+                <Camera className="w-3 h-3" /> Link to your post
               </span>
               <Input
                 value={postUrl}
