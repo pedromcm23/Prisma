@@ -9,12 +9,14 @@ export default NextAuth(authConfig).auth((request) => {
   const role = request.auth?.user?.role || 'CUSTOMER';
 
   const isHostRoute = path.startsWith('/host')
+  const isPublicHostRoute = path === '/host/onboarding' || path === '/host/builder'
+  const isProtectedHostRoute = isHostRoute && !isPublicHostRoute
   const isCustomerRoute = path.startsWith('/customer')
   
   // Login redirection based on role
   if (path === '/login' && isAuthenticated) {
     if (role === 'HOST') {
-      return NextResponse.redirect(new URL('/host/builder', request.url))
+      return NextResponse.redirect(new URL('/host/dashboard', request.url))
     }
     if (role === 'CUSTOMER') {
       return NextResponse.redirect(new URL('/search', request.url))
@@ -22,14 +24,12 @@ export default NextAuth(authConfig).auth((request) => {
   }
 
   // Protect Host routes
-  if (isHostRoute) {
+  if (isProtectedHostRoute) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    // Allow HOSTs to access host routes. In a real app we might want strict enforcement,
-    // but for now we enforce role === 'HOST'
     if (role !== 'HOST') {
-      return NextResponse.redirect(new URL('/search', request.url))
+      return NextResponse.redirect(new URL('/host/onboarding', request.url))
     }
   }
 
@@ -39,7 +39,7 @@ export default NextAuth(authConfig).auth((request) => {
       return NextResponse.redirect(new URL('/login', request.url))
     }
     if (role !== 'CUSTOMER') {
-      return NextResponse.redirect(new URL('/host/builder', request.url))
+      return NextResponse.redirect(new URL('/host/dashboard', request.url))
     }
   }
 
