@@ -38,9 +38,6 @@ export default NextAuth(authConfig).auth((request) => {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    if (role !== 'CUSTOMER') {
-      return NextResponse.redirect(new URL('/host/dashboard', request.url))
-    }
   }
 
   return NextResponse.next()
