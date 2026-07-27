@@ -5,10 +5,12 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Map, LayoutGrid, Star, MapPin, Search, Sparkles, ArrowRight, X } from "lucide-react";
+import { Map, LayoutGrid, Star, MapPin, Search, Sparkles, ArrowRight, X, Zap, Heart } from "lucide-react";
 import { type Listing } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
 import { UserNav } from "@/components/user-nav";
+import { SpontaneousEscapes } from "@/components/prisma/SpontaneousEscapes";
+import { SharePerkForm } from "@/components/prisma/SharePerkForm";
 import dynamic from "next/dynamic";
 
 const DynamicMap = dynamic(() => import("@/components/map-view"), { 
@@ -26,6 +28,7 @@ interface SearchClientProps {
 }
 
 export function SearchClient({ initialListings, user }: SearchClientProps) {
+  const [tab, setTab] = useState<"discover" | "spontaneous" | "share">("discover");
   const [view, setView] = useState<"grid" | "map">("grid");
   const [query, setQuery] = useState("");
   const [openListing, setOpenListing] = useState<Listing | null>(null);
@@ -52,37 +55,42 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
             <span className="font-display text-xl font-extrabold hidden sm:inline-block">Prisma</span>
           </Link>
 
-          <div className="relative flex-1 min-w-[150px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Where to? Lisbon, Puglia…"
-              className="pl-9 border-2 border-foreground shadow-hard-sm rounded-xl h-11 bg-white"
-            />
-          </div>
+          {tab === "discover" && (
+            <div className="relative flex-1 min-w-[150px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Where to? Lisbon, Puglia…"
+                className="pl-9 border-2 border-foreground shadow-hard-sm rounded-xl h-11 bg-white"
+              />
+            </div>
+          )}
+          {tab !== "discover" && <div className="flex-1" />}
 
           <div className="flex items-center gap-3">
-            <div className="inline-flex rounded-xl border-2 border-foreground shadow-hard-sm bg-white overflow-hidden shrink-0">
-              <button
-                onClick={() => setView("map")}
-                className={cn(
-                  "px-3 h-11 text-sm font-bold inline-flex items-center gap-1.5",
-                  view === "map" && "bg-primary text-primary-foreground",
-                )}
-              >
-                <Map className="w-4 h-4" /> <span className="hidden sm:inline">Map</span>
-              </button>
-              <button
-                onClick={() => setView("grid")}
-                className={cn(
-                  "px-3 h-11 text-sm font-bold inline-flex items-center gap-1.5 border-l-2 border-foreground",
-                  view === "grid" && "bg-primary text-primary-foreground",
-                )}
-              >
-                <LayoutGrid className="w-4 h-4" /> <span className="hidden sm:inline">Grid</span>
-              </button>
-            </div>
+            {tab === "discover" && (
+              <div className="inline-flex rounded-xl border-2 border-foreground shadow-hard-sm bg-white overflow-hidden shrink-0">
+                <button
+                  onClick={() => setView("map")}
+                  className={cn(
+                    "px-3 h-11 text-sm font-bold inline-flex items-center gap-1.5",
+                    view === "map" && "bg-primary text-primary-foreground",
+                  )}
+                >
+                  <Map className="w-4 h-4" /> <span className="hidden sm:inline">Map</span>
+                </button>
+                <button
+                  onClick={() => setView("grid")}
+                  className={cn(
+                    "px-3 h-11 text-sm font-bold inline-flex items-center gap-1.5 border-l-2 border-foreground",
+                    view === "grid" && "bg-primary text-primary-foreground",
+                  )}
+                >
+                  <LayoutGrid className="w-4 h-4" /> <span className="hidden sm:inline">Grid</span>
+                </button>
+              </div>
+            )}
 
             {user && (
               <UserNav user={user} />
@@ -96,19 +104,55 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
             )}
           </div>
         </div>
+        {/* Main tabs */}
+        <div className="mx-auto max-w-6xl px-4 pb-3 flex flex-wrap gap-2">
+          <TabBtn active={tab === "discover"} onClick={() => setTab("discover")} icon={<Sparkles className="w-3.5 h-3.5" />}>
+            Discover
+          </TabBtn>
+          <TabBtn active={tab === "spontaneous"} onClick={() => setTab("spontaneous")} icon={<Zap className="w-3.5 h-3.5" />}>
+            Spontaneous Escapes
+          </TabBtn>
+          <TabBtn active={tab === "share"} onClick={() => setTab("share")} icon={<Heart className="w-3.5 h-3.5" />}>
+            Share the Love
+          </TabBtn>
+        </div>
       </header>
 
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <p className="font-hand text-3xl text-accent">stays with soul</p>
-        <h1 className="text-4xl sm:text-5xl font-display font-extrabold">
-          {filtered.length} boutique {filtered.length === 1 ? "stay" : "stays"} waiting for you
-        </h1>
-      </div>
+      {tab === "discover" && (
+        <>
+          <div className="mx-auto max-w-6xl px-4 py-8">
+            <p className="font-hand text-3xl text-accent">stays with soul</p>
+            <h1 className="text-4xl sm:text-5xl font-display font-extrabold">
+              {filtered.length} boutique {filtered.length === 1 ? "stay" : "stays"} waiting for you
+            </h1>
+          </div>
 
-      {view === "grid" ? (
-        <GridView listings={filtered} onOpen={setOpenListing} />
-      ) : (
-        <DynamicMap listings={filtered} onOpen={setOpenListing} />
+          {view === "grid" ? (
+            <GridView listings={filtered} onOpen={setOpenListing} />
+          ) : (
+            <DynamicMap listings={filtered} onOpen={setOpenListing} />
+          )}
+        </>
+      )}
+
+      {tab === "spontaneous" && (
+        <div className="mx-auto max-w-6xl px-4 py-8">
+          <p className="font-hand text-3xl text-accent">last-minute love</p>
+          <h1 className="text-4xl sm:text-5xl font-display font-extrabold mb-2">
+            Escape in the next 72 hours
+          </h1>
+          <SpontaneousEscapes listings={initialListings} />
+        </div>
+      )}
+
+      {tab === "share" && (
+        <div className="mx-auto max-w-6xl px-4 py-8">
+          <p className="font-hand text-3xl text-accent">a little thank-you</p>
+          <h1 className="text-4xl sm:text-5xl font-display font-extrabold mb-2">
+            Share your stay, get €15 back
+          </h1>
+          <SharePerkForm properties={initialListings} />
+        </div>
       )}
 
       <Sheet open={!!openListing} onOpenChange={(o) => !o && setOpenListing(null)}>
@@ -243,5 +287,21 @@ function ListingDrawer({ listing, onClose }: { listing: Listing; onClose: () => 
         View Direct Page <ArrowRight className="w-4 h-4 ml-1" />
       </Button>
     </div>
+  );
+}
+
+function TabBtn({
+  active, onClick, icon, children,
+}: { active: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 h-9 px-3 rounded-full border-2 border-foreground shadow-hard-sm text-sm font-bold transition-transform",
+        active ? "bg-primary text-primary-foreground -translate-y-0.5" : "bg-white hover:bg-mustard/30",
+      )}
+    >
+      {icon} {children}
+    </button>
   );
 }

@@ -86,3 +86,37 @@ export async function seedDemoPerks() {
 
   revalidatePath("/host/perks");
 }
+
+export async function submitGuestPerk(formData: FormData) {
+  const propertyId = formData.get("propertyId") as string;
+  const guestName = formData.get("guestName") as string;
+  const guestEmail = formData.get("guestEmail") as string;
+  const postUrl = formData.get("postUrl") as string;
+  const note = formData.get("note") as string;
+
+  if (!propertyId || !guestName || !guestEmail || !postUrl) {
+    throw new Error("Missing required fields");
+  }
+
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId }
+  });
+
+  if (!property) {
+    throw new Error("Property not found");
+  }
+
+  await prisma.guestPerk.create({
+    data: {
+      hostId: property.hostId,
+      stayName: property.name,
+      guestName,
+      guestEmail,
+      postUrl,
+      note,
+      status: "pending"
+    }
+  });
+
+  return true;
+}
