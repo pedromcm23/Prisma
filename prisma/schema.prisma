@@ -24,6 +24,7 @@ model User {
   properties    Property[]     // For Hosts
   bookings      Booking[]      // For Customers
   rewardPoints  RewardPoint[]  // For Customers
+  guestPerks    GuestPerk[]    // For Hosts
   
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -109,4 +110,21 @@ model RewardPoint {
   
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+}
+
+model GuestPerk {
+  id          String   @id @default(cuid())
+  hostId      String
+  host        User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  
+  stayName    String
+  guestName   String
+  guestEmail  String
+  postUrl     String
+  note        String?  @db.Text
+  status      String   @default("pending") // pending, approved
+  code        String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

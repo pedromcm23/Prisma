@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, LayoutDashboard, Home, BookOpen, Euro, Settings } from "lucide-react";
+import { Sparkles, LayoutDashboard, Home, BookOpen, Euro, Settings, Gift } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -44,6 +44,9 @@ export default async function HostDashboardLayout({ children }: { children: Reac
           </Link>
           <Link href="/host/bookings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted transition-colors">
             <BookOpen className="w-4 h-4" /> Bookings
+          </Link>
+          <Link href="/host/perks" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted transition-colors">
+            <Gift className="w-4 h-4" /> Guest Perks
           </Link>
           <Link href="/host/earnings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted transition-colors">
             <Euro className="w-4 h-4" /> Earnings
