@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function getProperties(options?: { take?: number }) {
@@ -63,11 +64,24 @@ export async function savePropertyDesign(propertyId: string, designJson: any, ht
   return true;
 }
 
-export async function saveBoutiqueSite(data: any, kit: any, hostId: string) {
+export async function saveBoutiqueSite(data: any, kit: any, fallbackHostId: string) {
+  const session = await auth();
+  let hostId = fallbackHostId;
+
+  if (session?.user?.id) {
+    hostId = session.user.id;
+    // Upgrade them to HOST automatically since they just created a site
+    await prisma.user.update({
+      where: { id: hostId },
+      data: { role: "HOST" }
+    }).catch(() => {}); // ignore if user doesn't exist in db for some reason
+  }
+
   let host = await prisma.user.findUnique({ where: { id: hostId } });
   if (!host) {
     host = await prisma.user.findFirst({ where: { role: "HOST" } }) 
       || await prisma.user.create({ data: { name: "Demo Host", email: `host-${Math.random()}@prisma.com`, role: "HOST" } });
+    hostId = host.id;
   }
 
   const property = await prisma.property.create({
