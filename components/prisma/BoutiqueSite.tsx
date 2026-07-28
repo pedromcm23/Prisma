@@ -35,7 +35,7 @@ type Props = {
   initialBrandKit?: BrandKit;
 };
 
-export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, readOnly }: Props) {
+export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, readOnly, initialBrandKit }: Props) {
   const [editing, setEditing] = useState(!readOnly);
   const [showPublish, setShowPublish] = useState(false);
   const [copied, setCopied] = useState(false);
