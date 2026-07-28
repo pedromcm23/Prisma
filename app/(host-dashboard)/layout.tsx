@@ -18,8 +18,12 @@ export default async function HostDashboardLayout({ children }: { children: Reac
     select: { role: true },
   });
 
-  if (dbUser?.role !== "HOST") {
-    redirect("/host/onboarding");
+  if (dbUser && dbUser.role !== "HOST") {
+    // Auto-upgrade them since they reached the host dashboard
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { role: "HOST" }
+    });
   }
 
   return (
