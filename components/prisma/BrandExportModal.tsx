@@ -1,6 +1,8 @@
+"use client";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Instagram, Image as ImageIcon, QrCode } from "lucide-react";
+import { Download, Camera, Image as ImageIcon, QrCode } from "lucide-react";
 import type { BrandKit, FontPair } from "@/lib/brand-kit";
 import { FONT_PAIRS } from "@/lib/brand-kit";
 import type { PropertyData } from "@/lib/prisma-types";
@@ -171,7 +173,7 @@ export function BrandExportModal({ open, onOpenChange, kit, data, shareUrl }: Pr
       key: "story",
       label: "Instagram Story",
       dim: "1080 × 1920",
-      Icon: Instagram,
+      Icon: Camera,
       make: () => instagramStorySvg(kit, data, shareUrl),
       file: `${data.name || "prisma"}-story.svg`,
     },
