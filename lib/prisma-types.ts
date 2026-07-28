@@ -47,37 +47,6 @@ export const emptyData = (): PropertyData => ({
   importUrl: "",
 });
 
-export type SpontaneousStay = Listing & {
-  hoursLeft: number;
-  originalPrice: number;
-  dealPrice: number;
-  perks: string[];
-  window: string;
-};
-
-const EXTRAS = [
-  ["Free late checkout (2pm)", "Welcome drinks on the terrace"],
-  ["Complimentary breakfast basket", "Free bike rental for a day"],
-  ["Sunset aperitivo on arrival", "Free late checkout (2pm)"],
-  ["Handmade welcome sweets", "Guided neighborhood walk"],
-];
-
-export function getSpontaneousStays(listings: Listing[] = SAMPLE_LISTINGS): SpontaneousStay[] {
-  return listings.slice(0, 4).map((l, i) => {
-    const discount = 0.2 + i * 0.05;
-    const dealPrice = Math.round(l.price * (1 - discount));
-    const hoursLeft = [14, 28, 46, 68][i];
-    return {
-      ...l,
-      originalPrice: l.price,
-      dealPrice,
-      hoursLeft,
-      perks: EXTRAS[i % EXTRAS.length],
-      window: hoursLeft < 24 ? "Tonight" : hoursLeft < 48 ? "Tomorrow" : "This weekend",
-    };
-  });
-}
-
 export type Listing = {
   slug: string;
   name: string;

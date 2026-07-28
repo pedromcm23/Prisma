@@ -7,28 +7,45 @@ import { Input } from "@/components/ui/input";
 import {
   Wrench, Save, Sparkles, ArrowLeft, Calendar as CalendarIcon,
   Star, MapPin, Coffee, Sun, Waves, Copy, Check, User, Heart,
+  Palette, Package,
 } from "lucide-react";
 
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { PropertyData } from "@/lib/prisma-types";
 import { Editable } from "./Editable";
+import {
+  THEME_PRESETS, brandKitCssVars, themeToBrandKit,
+  type BrandKit, type ThemeId,
+} from "@/lib/brand-kit";
+import { BrandKitDrawer } from "./BrandKitDrawer";
+import { BrandExportModal } from "./BrandExportModal";
 
 const ILLUSTRATIONS = [Coffee, Sun, Waves];
 
 type Props = {
   data: PropertyData;
   setData: (d: PropertyData) => void;
-  onBack: () => void;
+  onBack?: () => void;
+  onPublish?: (kit: BrandKit) => void;
+  isPublishing?: boolean;
+  readOnly?: boolean;
+  initialBrandKit?: BrandKit;
 };
 
-export function BoutiqueSite({ data, setData, onBack }: Props) {
-  const [editing, setEditing] = useState(true);
+export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, readOnly }: Props) {
+  const [editing, setEditing] = useState(!readOnly);
   const [showPublish, setShowPublish] = useState(false);
   const [copied, setCopied] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(0);
   const [checkIn, setCheckIn] = useState<Date | undefined>();
   const [checkOut, setCheckOut] = useState<Date | undefined>();
+  const [brandKit, setBrandKit] = useState<BrandKit>(() => initialBrandKit || themeToBrandKit("folk-pop"));
+  const [brandOpen, setBrandOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const applyTheme = (id: ThemeId) =>
+    setBrandKit(themeToBrandKit(id, brandKit.logoDataUrl));
 
   const slug = (data.name || "your-stay").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const shareUrl = typeof window !== "undefined"
@@ -38,26 +55,37 @@ export function BoutiqueSite({ data, setData, onBack }: Props) {
   const set = <K extends keyof PropertyData>(k: K, v: PropertyData[K]) =>
     setData({ ...data, [k]: v });
 
+
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={brandKitCssVars(brandKit)}>
       {/* Sticky editor banner */}
-      <div className="sticky top-0 z-40 bg-mustard border-b-2 border-foreground shadow-hard-sm">
-        <div className="mx-auto max-w-6xl px-4 py-2.5 flex flex-wrap items-center gap-3 justify-between">
-          <div className="flex items-center gap-2">
+      {!readOnly && (
+        <div className="sticky top-0 z-40 bg-mustard border-b-2 border-foreground shadow-hard-sm">
+          <div className="mx-auto max-w-6xl px-4 py-2.5 flex flex-wrap items-center gap-3 justify-between">
+            <div className="flex items-center gap-2">
             <Wrench className="w-4 h-4" />
             <span className="font-bold text-sm">🛠 Editor Mode {editing ? "Active" : "Paused"}</span>
             <span className="hidden sm:inline text-xs text-foreground/70">
               — click any text to edit
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
               variant="outline"
               onClick={onBack}
               className="border-2 border-foreground shadow-hard-sm rounded-lg h-9 bg-cream"
             >
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back to form
+              <ArrowLeft className="w-4 h-4 mr-1" /> Back
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setBrandOpen(true)}
+              className="border-2 border-foreground shadow-hard-sm rounded-lg h-9 bg-cream"
+            >
+              <Palette className="w-4 h-4 mr-1" /> 🎨 Brand Kit
             </Button>
             <Button
               size="sm"
@@ -69,16 +97,61 @@ export function BoutiqueSite({ data, setData, onBack }: Props) {
             </Button>
             <Button
               size="sm"
-              onClick={() => setShowPublish(true)}
-              className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-lg h-9 hover:bg-primary/90"
+              onClick={() => setExportOpen(true)}
+              className="bg-accent text-accent-foreground border-2 border-foreground shadow-hard-sm rounded-lg h-9 hover:opacity-90"
             >
-              <Save className="w-4 h-4 mr-1" /> Save & Publish
+              <Package className="w-4 h-4 mr-1" /> 📦 Export Kit
+            </Button>
+            <Button
+              size="sm"
+              disabled={isPublishing}
+              onClick={() => {
+                if (onPublish) onPublish(brandKit);
+              }}
+              className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-lg h-9 hover:opacity-90"
+            >
+              <Save className="w-4 h-4 mr-1" /> {isPublishing ? "Publishing..." : "Publish"}
             </Button>
           </div>
         </div>
       </div>
+      )}
 
-      {/* HERO */}
+      {/* Theme switcher bar */}
+      {!readOnly && (
+        <div className="sticky top-[52px] z-30 bg-cream/95 backdrop-blur border-b-2 border-foreground">
+          <div className="mx-auto max-w-6xl px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar items-center">
+            <span className="text-xs font-bold text-muted-foreground mr-2 whitespace-nowrap">Try a Preset:</span>
+          {THEME_PRESETS.map((t) => {
+            const active = brandKit.themeId === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => applyTheme(t.id)}
+                className={cn(
+                  "inline-flex items-center gap-1.5 h-8 px-3 rounded-full border-2 border-foreground text-xs font-bold transition-transform",
+                  active ? "shadow-hard-sm -translate-y-0.5" : "bg-white hover:bg-mustard/30",
+                )}
+                style={active ? { background: t.mustard, color: t.foreground } : undefined}
+                title={t.label}
+              >
+                <span
+                  className="w-3 h-3 rounded-full border border-foreground"
+                  style={{ background: t.primary }}
+                />
+                <span
+                  className="w-3 h-3 rounded-full border border-foreground -ml-1"
+                  style={{ background: t.accent }}
+                />
+                <span>{t.emoji} {t.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      )}
+
+      {/* Main Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-cream to-transparent" />
         <div className="mx-auto max-w-6xl px-4 pt-16 pb-20 grid md:grid-cols-2 gap-10 items-center">
@@ -504,7 +577,11 @@ export function BoutiqueSite({ data, setData, onBack }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <BrandKitDrawer open={brandOpen} onOpenChange={setBrandOpen} kit={brandKit} setKit={setBrandKit} />
+      <BrandExportModal open={exportOpen} onOpenChange={setExportOpen} kit={brandKit} data={data} shareUrl={shareUrl} />
     </div>
+
   );
 }
 

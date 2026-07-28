@@ -62,3 +62,16 @@ export async function savePropertyDesign(propertyId: string, designJson: any, ht
   });
   return true;
 }
+
+export async function saveBoutiqueSite(data: any, kit: any, hostId: string) {
+  const property = await prisma.property.create({
+    data: {
+      name: data.name || "My Boutique Property",
+      description: data.location || "Unknown Location",
+      hostId: hostId,
+      landingPageJson: data,
+      brandKitJson: kit,
+    }
+  });
+  return property.id;
+}

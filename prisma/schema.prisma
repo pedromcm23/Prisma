@@ -9,6 +9,7 @@ datasource db {
 enum Role {
   HOST
   CUSTOMER
+  ADMIN
 }
 
 model User {
@@ -75,6 +76,7 @@ model Property {
   // Unlayer landing page data
   landingPageJson Json?
   landingPageHtml String?      @db.Text
+  brandKitJson    Json?
   
   bookings      Booking[]
   

@@ -33,17 +33,21 @@ export function UserNav({
     .substring(0, 2)
     .toUpperCase() || "U";
     
-  const isHostRole = user.role === "HOST";
+  const isHostRole = user.role === "HOST" || user.role === "ADMIN";
+  const isAdminRole = user.role === "ADMIN";
+  
   const isHostContext = pathname?.startsWith("/host");
+  const isAdminContext = pathname?.startsWith("/admin");
 
   return (
     <div className="flex items-center gap-3">
       {/* Context Badge */}
       <div className={cn(
         "hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full border-2 border-foreground shadow-hard-sm text-xs font-bold uppercase tracking-wider",
+        isAdminContext ? "bg-red-500 text-white" :
         isHostContext ? "bg-primary text-primary-foreground" : "bg-ocean text-white"
       )}>
-        {isHostContext ? "Host Mode" : "Guest Mode"}
+        {isAdminContext ? "Admin Mode" : isHostContext ? "Host Mode" : "Guest Mode"}
       </div>
 
       <DropdownMenu>
@@ -64,25 +68,34 @@ export function UserNav({
           </DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-foreground/20" />
           
-          {isHostRole ? (
-            <>
-              {isHostContext ? (
-                <DropdownMenuItem asChild className="font-bold cursor-pointer focus:bg-mustard/30">
-                  <Link href="/search">
-                    <Search className="mr-2 h-4 w-4" />
-                    <span>Switch to Guest Mode</span>
-                  </Link>
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem asChild className="font-bold cursor-pointer focus:bg-mustard/30">
-                  <Link href="/host/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>Switch to Host Mode</span>
-                  </Link>
-                </DropdownMenuItem>
-              )}
-            </>
-          ) : (
+          {isAdminRole && !isAdminContext && (
+            <DropdownMenuItem asChild className="font-bold cursor-pointer focus:bg-mustard/30 text-red-600">
+              <Link href="/admin/hosts">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Switch to Admin Mode</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+
+          {isHostRole && !isHostContext && (
+            <DropdownMenuItem asChild className="font-bold cursor-pointer focus:bg-mustard/30">
+              <Link href="/host/dashboard">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Switch to Host Mode</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+
+          {(isHostRole || isAdminRole) && (isHostContext || isAdminContext) && (
+            <DropdownMenuItem asChild className="font-bold cursor-pointer focus:bg-mustard/30">
+              <Link href="/search">
+                <Search className="mr-2 h-4 w-4" />
+                <span>Switch to Guest Mode</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+
+          {!isHostRole && !isAdminRole && (
             <>
               <DropdownMenuItem asChild className="font-bold cursor-pointer focus:bg-mustard/30">
                 <Link href="/customer/bookings">

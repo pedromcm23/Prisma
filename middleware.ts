@@ -8,6 +8,7 @@ export default NextAuth(authConfig).auth((request) => {
   const isAuthenticated = !!request.auth;
   const role = request.auth?.user?.role || 'CUSTOMER';
 
+  const isAdminRoute = path.startsWith('/admin')
   const isHostRoute = path.startsWith('/host')
   const isPublicHostRoute = path === '/host/onboarding' || path === '/host/builder'
   const isProtectedHostRoute = isHostRoute && !isPublicHostRoute
@@ -15,6 +16,9 @@ export default NextAuth(authConfig).auth((request) => {
   
   // Login redirection based on role
   if (path === '/login' && isAuthenticated) {
+    if (role === 'ADMIN') {
+      return NextResponse.redirect(new URL('/admin/hosts', request.url))
+    }
     if (role === 'HOST') {
       return NextResponse.redirect(new URL('/host/dashboard', request.url))
     }
@@ -23,12 +27,24 @@ export default NextAuth(authConfig).auth((request) => {
     }
   }
 
+  // Protect Admin routes
+  if (isAdminRoute) {
+    if (!isAuthenticated) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    if (role !== 'ADMIN') {
+      // Redirect unauthorized users to their respective homes
+      return NextResponse.redirect(new URL(role === 'HOST' ? '/host/dashboard' : '/search', request.url))
+    }
+  }
+
   // Protect Host routes
   if (isProtectedHostRoute) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    if (role !== 'HOST') {
+    // Admin and Host can access host routes
+    if (role !== 'HOST' && role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/host/onboarding', request.url))
     }
   }
@@ -46,6 +62,7 @@ export default NextAuth(authConfig).auth((request) => {
 export const config = {
   matcher: [
     '/login',
+    '/admin/:path*',
     '/host/:path*',
     '/customer/:path*',
   ],

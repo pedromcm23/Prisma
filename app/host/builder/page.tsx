@@ -5,8 +5,11 @@ import { useState } from "react";
 import { OnboardingWizard } from "@/components/prisma/OnboardingWizard";
 import { BoutiqueSite } from "@/components/prisma/BoutiqueSite";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
+import { saveBoutiqueSite } from "@/app/actions/property";
+import { useRouter } from "next/navigation";
 
 export default function BuilderPage() {
+  const router = useRouter();
   const [data, setData] = useState<PropertyData>(() => {
     const d = emptyData();
     d.name = "";
@@ -27,6 +30,21 @@ export default function BuilderPage() {
     return d;
   });
   const [view, setView] = useState<"form" | "site">("form");
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePublish = async (kit: any) => {
+    setIsPublishing(true);
+    try {
+      // In a real app we'd get hostId from session context, 
+      // but saveBoutiqueSite handles demo host fallback.
+      const propertyId = await saveBoutiqueSite(data, kit, "demo-host-id");
+      router.push(`/host/properties`); // or show success
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsPublishing(false);
+    }
+  };
 
   return (
     <div>
@@ -45,7 +63,13 @@ export default function BuilderPage() {
           }}
         />
       ) : (
-        <BoutiqueSite data={data} setData={setData} onBack={() => setView("form")} />
+        <BoutiqueSite 
+          data={data} 
+          setData={setData} 
+          onBack={() => setView("form")} 
+          onPublish={handlePublish}
+          isPublishing={isPublishing}
+        />
       )}
     </div>
   );
