@@ -67,7 +67,7 @@ export async function saveBoutiqueSite(data: any, kit: any, hostId: string) {
   let host = await prisma.user.findUnique({ where: { id: hostId } });
   if (!host) {
     host = await prisma.user.findFirst({ where: { role: "HOST" } }) 
-      || await prisma.user.create({ data: { name: "Demo Host", email: "host@prisma.com", role: "HOST" } });
+      || await prisma.user.create({ data: { name: "Demo Host", email: `host-${Math.random()}@prisma.com`, role: "HOST" } });
   }
 
   const property = await prisma.property.create({
