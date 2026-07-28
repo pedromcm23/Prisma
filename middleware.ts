@@ -43,10 +43,7 @@ export default NextAuth(authConfig).auth((request) => {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    // Admin and Host can access host routes
-    if (role !== 'HOST' && role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/host/onboarding', request.url))
-    }
+    // We defer the strict role check to layout.tsx which can query the fresh DB state
   }
 
   // Protect Customer routes
