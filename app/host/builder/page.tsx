@@ -38,7 +38,7 @@ export default function BuilderPage() {
       // In a real app we'd get hostId from session context, 
       // but saveBoutiqueSite handles demo host fallback.
       const propertyId = await saveBoutiqueSite(data, kit, "demo-host-id");
-      router.push(`/host/properties`); // or show success
+      router.push(`/host/dashboard`); // or show success
     } catch (err) {
       console.error(err);
     } finally {

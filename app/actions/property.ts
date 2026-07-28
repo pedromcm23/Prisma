@@ -64,11 +64,17 @@ export async function savePropertyDesign(propertyId: string, designJson: any, ht
 }
 
 export async function saveBoutiqueSite(data: any, kit: any, hostId: string) {
+  let host = await prisma.user.findUnique({ where: { id: hostId } });
+  if (!host) {
+    host = await prisma.user.findFirst({ where: { role: "HOST" } }) 
+      || await prisma.user.create({ data: { name: "Demo Host", email: "host@prisma.com", role: "HOST" } });
+  }
+
   const property = await prisma.property.create({
     data: {
       name: data.name || "My Boutique Property",
       description: data.location || "Unknown Location",
-      hostId: hostId,
+      hostId: host?.id || hostId,
       landingPageJson: data,
       brandKitJson: kit,
     }
