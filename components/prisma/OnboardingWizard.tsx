@@ -294,12 +294,44 @@ function RoomCard({
 
   const addFiles = (files: FileList | null) => {
     if (!files) return;
-    Array.from(files).slice(0, 6).forEach((f) => {
-      if (!f.type.startsWith("image/")) return;
+    Array.from(files).forEach((f) => {
       const reader = new FileReader();
       reader.onload = () => {
         const url = String(reader.result || "");
-        onChange({ photos: [...room.photos, url].slice(0, 6) });
+        
+        // Compress image using canvas to avoid Vercel payload limits
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedUrl = canvas.toDataURL("image/jpeg", 0.7);
+            onChange({ photos: [...room.photos, compressedUrl].slice(0, 6) });
+          } else {
+            onChange({ photos: [...room.photos, url].slice(0, 6) });
+          }
+        };
+        img.src = url;
       };
       reader.readAsDataURL(f);
     });
