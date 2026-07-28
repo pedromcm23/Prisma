@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { format } from "date-fns";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { PropertyData } from "@/lib/prisma-types";
 import { Editable } from "./Editable";
@@ -517,6 +518,11 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
 
               <Button
                 disabled={!checkIn || !checkOut}
+                onClick={() => {
+                  toast.success(`✨ Booking confirmed for ${data.rooms[selectedRoom]?.name}!`);
+                  setCheckIn(undefined);
+                  setCheckOut(undefined);
+                }}
                 className="w-full mt-4 bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-14 text-lg font-bold hover:bg-primary/90 disabled:opacity-50"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
