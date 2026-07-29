@@ -94,6 +94,7 @@ model Booking {
   
   startDate     DateTime
   endDate       DateTime
+  totalPrice    Float          @default(0)
   status        String         @default("PENDING") // PENDING, CONFIRMED, CANCELLED
   
   createdAt     DateTime       @default(now())

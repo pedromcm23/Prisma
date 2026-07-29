@@ -87,17 +87,24 @@ async function main() {
     create: { email: "pedromcm1723@gmail.com", role: "HOST", name: "Pedro (1723)" },
   });
 
-  console.log(`Ensured users exist: ${user1.id} and ${user2.id}`);
+  const guest = await prisma.user.upsert({
+    where: { email: "pedromcm23@gmail.com" },
+    update: { role: "CUSTOMER", name: "Pedro (Guest)", image: "https://github.com/pedromcm23.png" },
+    create: { email: "pedromcm23@gmail.com", role: "CUSTOMER", name: "Pedro (Guest)", image: "https://github.com/pedromcm23.png" },
+  });
 
-  // Delete all existing properties to start fresh with the seed data
+  console.log(`Ensured users exist.`);
+
+  // Clear existing data
+  await prisma.guestPerk.deleteMany({});
+  await prisma.booking.deleteMany({});
   await prisma.property.deleteMany({});
-  console.log("Deleted old properties.");
+  console.log("Deleted old properties, bookings, and perks.");
 
   for (let i = 0; i < PROPS_DATA.length; i++) {
     const data = PROPS_DATA[i];
     const hostId = i < 2 ? user1.id : user2.id;
     
-    // Construct the BoutiqueSite JSON
     const landingPageJson = {
       name: data.name,
       location: data.location,
@@ -117,12 +124,11 @@ async function main() {
       importUrl: ""
     };
 
-    // Minimal brand kit structure
     const brandKitJson = {
       themeId: data.theme,
     };
 
-    await prisma.property.create({
+    const property = await prisma.property.create({
       data: {
         name: data.name,
         description: data.location,
@@ -131,9 +137,78 @@ async function main() {
         brandKitJson
       }
     });
+
+    // Create 3 past bookings (for charts & revenue)
+    for (let j = 0; j < 3; j++) {
+      const pastDate = new Date();
+      pastDate.setMonth(pastDate.getMonth() - (j + 1));
+      pastDate.setDate(15); // fixed day
+      
+      const endDate = new Date(pastDate);
+      endDate.setDate(pastDate.getDate() + 3);
+
+      await prisma.booking.create({
+        data: {
+          propertyId: property.id,
+          customerId: guest.id,
+          startDate: pastDate,
+          endDate: endDate,
+          status: "CONFIRMED",
+          totalPrice: data.basePrice * 3
+        }
+      });
+    }
+
+    // Create 2 future bookings
+    for (let j = 0; j < 2; j++) {
+      const futureDate = new Date();
+      futureDate.setMonth(futureDate.getMonth() + (j + 1));
+      futureDate.setDate(10);
+      
+      const endDate = new Date(futureDate);
+      endDate.setDate(futureDate.getDate() + 4);
+
+      await prisma.booking.create({
+        data: {
+          propertyId: property.id,
+          customerId: guest.id,
+          startDate: futureDate,
+          endDate: endDate,
+          status: j === 0 ? "CONFIRMED" : "PENDING",
+          totalPrice: data.basePrice * 4
+        }
+      });
+    }
+
+    // Create 2 GuestPerks for this host (only if it's the first property to avoid duplication per host)
+    if (i === 0 || i === 2) {
+      await prisma.guestPerk.create({
+        data: {
+          hostId: hostId,
+          stayName: data.name,
+          guestName: "Alice Wanderlust",
+          guestEmail: "alice@example.com",
+          postUrl: PHOTOS[Math.floor(Math.random() * PHOTOS.length)],
+          note: "This place was magic! Tagged you on my reels.",
+          status: "pending"
+        }
+      });
+      await prisma.guestPerk.create({
+        data: {
+          hostId: hostId,
+          stayName: data.name,
+          guestName: "John Doe",
+          guestEmail: "john@example.com",
+          postUrl: PHOTOS[Math.floor(Math.random() * PHOTOS.length)],
+          note: "Thanks for the amazing hospitality. 🍷",
+          status: "approved",
+          code: "PRISMA15-JOHND"
+        }
+      });
+    }
   }
 
-  console.log("Successfully seeded properties!");
+  console.log("Successfully seeded properties, bookings, and perks!");
 }
 
 main()
