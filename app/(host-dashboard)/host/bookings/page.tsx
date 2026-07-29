@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function HostBookings() {
   const session = await auth();
@@ -13,62 +14,63 @@ export default async function HostBookings() {
     where: { property: { hostId } },
     include: {
       property: { select: { name: true } },
-      customer: { select: { name: true, image: true } }
+      customer: { select: { name: true, image: true, email: true } }
     },
-    orderBy: { startDate: "desc" }
+    orderBy: { checkIn: "desc" }
   });
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-4xl font-display font-extrabold tracking-tight">Bookings</h1>
-        <p className="text-muted-foreground mt-2 text-lg">Manage your upcoming stays and past guests.</p>
+    <div>
+      <div className="mb-6">
+        <p className="font-hand text-2xl text-accent">who stayed with you</p>
+        <h2 className="text-3xl font-display font-extrabold">Booking History</h2>
       </div>
 
-      <div className="bg-white border-2 border-foreground shadow-hard rounded-2xl overflow-hidden">
+      <div className="hand-border bg-white overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-mustard/30 border-b-2 border-foreground font-bold tracking-wider">
-              <tr>
-                <th className="px-6 py-4">Guest</th>
-                <th className="px-6 py-4">Property</th>
-                <th className="px-6 py-4">Dates</th>
-                <th className="px-6 py-4">Total</th>
-                <th className="px-6 py-4">Status</th>
+          <table className="w-full text-sm">
+            <thead className="bg-mustard/40 border-b-2 border-foreground">
+              <tr className="text-left">
+                {["Guest", "Property", "Dates", "Price", "Status"].map((h) => (
+                  <th key={h} className="px-4 py-3 text-xs uppercase tracking-wider font-bold">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y-2 divide-foreground/10">
-              {bookings.length === 0 ? (
+            <tbody>
+              {bookings.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground font-bold">
+                  <td colSpan={5} className="p-8 text-center text-muted-foreground">
                     No bookings found.
                   </td>
                 </tr>
-              ) : bookings.map((booking) => (
-                <tr key={booking.id} className="hover:bg-muted/50 transition-colors">
-                  <td className="px-6 py-4 font-bold flex items-center gap-3">
-                    <img 
-                      src={booking.customer.image || `https://api.dicebear.com/9.x/notionists/svg?seed=${booking.customer.name}`} 
-                      alt="avatar" 
-                      className="w-8 h-8 rounded-full border-2 border-foreground bg-cream object-cover"
-                    />
-                    {booking.customer.name || "Guest"}
+              )}
+              {bookings.map((b) => (
+                <tr key={b.id} className="border-b border-foreground/10 last:border-0 align-top">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-8 h-8 border-2 border-foreground">
+                        <AvatarImage src={b.customer.image || ""} />
+                        <AvatarFallback className="font-bold">{b.customer.name?.[0] || "?"}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-bold">{b.customer.name}</p>
+                        <p className="text-xs text-muted-foreground">{b.customer.email}</p>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 font-bold">{booking.property.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {format(new Date(booking.startDate), "MMM d")} - {format(new Date(booking.endDate), "MMM d, yyyy")}
+                  <td className="px-4 py-3 font-bold">{b.property.name}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {format(new Date(b.checkIn), "MMM d")} → {format(new Date(b.checkOut), "MMM d, yyyy")}
                   </td>
-                  <td className="px-6 py-4 font-display font-bold text-lg">
-                    €{booking.totalPrice}
+                  <td className="px-4 py-3 font-display font-extrabold">
+                    €{b.totalPrice}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3">
                     <span className={cn(
-                      "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border-2 border-foreground shadow-hard-sm inline-flex items-center gap-1",
-                      booking.status === "CONFIRMED" ? "bg-green-300 text-green-900" : 
-                      booking.status === "PENDING" ? "bg-mustard text-yellow-900" : 
-                      "bg-gray-200 text-gray-700"
+                      "inline-flex rounded-full border-2 border-foreground px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider",
+                      b.status === "CONFIRMED" ? "bg-cream text-foreground" : "bg-white text-muted-foreground"
                     )}>
-                      {booking.status}
+                      {b.status}
                     </span>
                   </td>
                 </tr>
