@@ -28,10 +28,7 @@ export function PreviewClient({ initialData }: { initialData: PropertyData }) {
     setIsPublishing(true);
     try {
       await saveBoutiqueSite(data, kit, "demo-host-id");
-      if (typeof window !== "undefined") {
-        sessionStorage.removeItem("prisma_draft");
-      }
-      router.push(`/host/properties`);
+      // Intentionally not redirecting so they see the "You're live" modal
     } catch (err) {
       console.error(err);
     } finally {

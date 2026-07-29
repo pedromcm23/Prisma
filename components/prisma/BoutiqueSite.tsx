@@ -108,8 +108,11 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
             <Button
               size="sm"
               disabled={isPublishing}
-              onClick={() => {
-                if (onPublish) onPublish(brandKit);
+              onClick={async () => {
+                if (onPublish) {
+                  await onPublish(brandKit);
+                }
+                setShowPublish(true);
               }}
               className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-lg h-9 hover:opacity-90"
             >
