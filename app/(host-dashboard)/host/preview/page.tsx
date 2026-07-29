@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { BoutiqueSite } from "@/components/prisma/BoutiqueSite";
+import { PreviewClient } from "./preview-client";
 import { emptyData, PropertyData } from "@/lib/prisma-types";
-import { redirect } from "next/navigation";
 
 export default async function PreviewWebsite() {
   const session = await auth();
@@ -52,7 +51,7 @@ export default async function PreviewWebsite() {
         <span className="ml-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Live Preview</span>
       </div>
       <div className="bg-white">
-        <BoutiqueSite data={data} setData={() => {}} onBack={() => {}} onPublish={async () => {}} isPublishing={false} />
+        <PreviewClient initialData={data} />
       </div>
     </div>
   );
