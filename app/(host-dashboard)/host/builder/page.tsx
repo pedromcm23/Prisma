@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { OnboardingWizard } from "@/components/prisma/OnboardingWizard";
-import { BoutiqueSite } from "@/components/prisma/BoutiqueSite";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
-import { saveBoutiqueSite } from "@/app/actions/property";
 import { useRouter } from "next/navigation";
 
 export default function BuilderPage() {
@@ -29,43 +27,19 @@ export default function BuilderPage() {
     ];
     return d;
   });
-  const [view, setView] = useState<"form" | "site">("form");
-  const [isPublishing, setIsPublishing] = useState(false);
-
-  const handlePublish = async (kit: any) => {
-    setIsPublishing(true);
-    try {
-      // In a real app we'd get hostId from session context, 
-      // but saveBoutiqueSite handles demo host fallback.
-      const propertyId = await saveBoutiqueSite(data, kit, "demo-host-id");
-      router.push(`/host/properties`); // or show success
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsPublishing(false);
-    }
-  };
 
   return (
     <div>
-      {view === "form" ? (
-        <OnboardingWizard
-          data={data}
-          setData={setData}
-          onGenerate={() => {
-            setView("site");
-            if (typeof window !== "undefined") window.scrollTo({ top: 0 });
-          }}
-        />
-      ) : (
-        <BoutiqueSite 
-          data={data} 
-          setData={setData} 
-          onBack={() => setView("form")} 
-          onPublish={handlePublish}
-          isPublishing={isPublishing}
-        />
-      )}
+      <OnboardingWizard
+        data={data}
+        setData={setData}
+        onGenerate={() => {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("prisma_draft", JSON.stringify(data));
+          }
+          router.push("/host/preview");
+        }}
+      />
     </div>
   );
 }
