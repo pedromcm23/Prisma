@@ -38,7 +38,7 @@ export default function BuilderPage() {
       // In a real app we'd get hostId from session context, 
       // but saveBoutiqueSite handles demo host fallback.
       const propertyId = await saveBoutiqueSite(data, kit, "demo-host-id");
-      router.push(`/host/dashboard`); // or show success
+      router.push(`/host/properties`); // or show success
     } catch (err) {
       console.error(err);
     } finally {
@@ -48,11 +48,6 @@ export default function BuilderPage() {
 
   return (
     <div>
-      <div className="mx-auto max-w-6xl px-4 pt-5 absolute top-0 left-0 z-50">
-        <Link href="/" className="text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-primary bg-white/50 px-2 py-1 rounded-md backdrop-blur">
-          ← Prisma home
-        </Link>
-      </div>
       {view === "form" ? (
         <OnboardingWizard
           data={data}

@@ -17,5 +17,5 @@ export async function upgradeToHost() {
   });
 
   revalidatePath("/", "layout");
-  redirect("/host/dashboard");
+  redirect("/host/builder");
 }
