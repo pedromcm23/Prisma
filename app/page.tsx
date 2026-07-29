@@ -3,36 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Compass, Home, ArrowRight, Star, MapPin } from "lucide-react";
 import { getProperties } from "@/app/actions/property";
 import { auth } from "@/auth";
-import { UserNav } from "@/components/user-nav";
+import { prisma } from "@/lib/prisma";
+import { AppHeader } from "@/components/app-header";
 
 export default async function Landing() {
   const latestProperties = await getProperties({ take: 3 });
   const session = await auth();
+  
+  let role = "GUEST";
+  if (session?.user?.id) {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true }
+    });
+    if (dbUser) role = dbUser.role;
+  }
 
   return (
     <div className="min-h-screen">
-      {/* Nav */}
-      <header className="mx-auto max-w-6xl px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-primary border-2 border-foreground shadow-hard-sm flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="text-2xl font-display font-extrabold">Prisma</span>
-        </div>
-        <nav className="hidden sm:flex items-center gap-6 text-sm font-bold">
-          <Link href="/search" className="hover:text-primary">Explore stays</Link>
-          <Link href="/host/builder" className="hover:text-primary">For hosts</Link>
-          {session?.user ? (
-            <UserNav user={session.user} />
-          ) : (
-            <Link href="/api/auth/signin">
-              <Button className="h-9 px-4 rounded-xl bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm font-bold hover:bg-primary/90">
-                Sign In
-              </Button>
-            </Link>
-          )}
-        </nav>
-      </header>
+      <AppHeader user={session?.user} role={role} />
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-4 pt-8 pb-6 text-center">

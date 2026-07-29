@@ -8,7 +8,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Map, LayoutGrid, Star, MapPin, Search, Sparkles, ArrowRight, X, Zap, Heart } from "lucide-react";
 import { type Listing } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
-import { UserNav } from "@/components/user-nav";
+import { StatusPill, IconOut } from "@/components/app-header";
+import { signOut } from "next-auth/react";
 import { SpontaneousEscapes } from "@/components/prisma/SpontaneousEscapes";
 import { SharePerkForm } from "@/components/prisma/SharePerkForm";
 import dynamic from "next/dynamic";
@@ -94,7 +95,10 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
             )}
 
             {user && (
-              <UserNav user={user} />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <StatusPill label={user.role === "HOST" ? "HOST" : "GUEST"} tone={user.role === "HOST" ? "primary" : "mustard"} />
+                <IconOut onClick={() => signOut({ callbackUrl: '/' })} label={user.name || "User"} />
+              </div>
             )}
             {!user && (
               <Link href="/api/auth/signin">
