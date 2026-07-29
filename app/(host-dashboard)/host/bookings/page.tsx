@@ -16,7 +16,7 @@ export default async function HostBookings() {
       property: { select: { name: true } },
       customer: { select: { name: true, image: true, email: true } }
     },
-    orderBy: { checkIn: "desc" }
+    orderBy: { startDate: "desc" }
   });
 
   if (bookings.length === 0) {
@@ -25,8 +25,8 @@ export default async function HostBookings() {
         id: "mock-1",
         customer: { name: "Mira Weiss", email: "mira@example.com" },
         property: { name: "Garden Room" },
-        checkIn: new Date("2026-06-12"),
-        checkOut: new Date("2026-06-15"),
+        startDate: new Date("2026-06-12"),
+        endDate: new Date("2026-06-15"),
         status: "CONFIRMED", // Displayed as COMPLETED via class styling matching cream
         review: { text: "Woke up to bells and warm bread. Never wanted to leave.", rating: 5 }
       },
@@ -34,8 +34,8 @@ export default async function HostBookings() {
         id: "mock-2",
         customer: { name: "Julián Ortiz", email: "j@example.com" },
         property: { name: "Sea View Suite" },
-        checkIn: new Date("2026-07-02"),
-        checkOut: new Date("2026-07-06"),
+        startDate: new Date("2026-07-02"),
+        endDate: new Date("2026-07-06"),
         status: "CONFIRMED",
         review: { text: "The tiles, the light, the little cat. A whole vibe.", rating: 5 }
       },
@@ -43,8 +43,8 @@ export default async function HostBookings() {
         id: "mock-3",
         customer: { name: "Sara Rossi", email: "sara@example.com" },
         property: { name: "Garden Room" },
-        checkIn: new Date("2026-08-20"),
-        checkOut: new Date("2026-08-24"),
+        startDate: new Date("2026-08-20"),
+        endDate: new Date("2026-08-24"),
         status: "PENDING",
       }
     ] as any;
@@ -83,7 +83,7 @@ export default async function HostBookings() {
                   </td>
                   <td className="px-4 py-3">{b.property.name}</td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    {format(new Date(b.checkIn), "MMM d")} → {format(new Date(b.checkOut), "MMM d, yyyy")}
+                    {format(new Date(b.startDate), "MMM d")} → {format(new Date(b.endDate), "MMM d, yyyy")}
                   </td>
                   <td className="px-4 py-3">
                     <span className={cn(

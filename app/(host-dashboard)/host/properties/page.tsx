@@ -24,10 +24,10 @@ export default async function HostProperties() {
     properties = [
       {
         id: "mock-1",
-        name: "casa",
-        description: "HEU",
-        status: "ai",
-        landingPageJson: { rooms: [{}, {}] },
+        name: "Casa Amarela",
+        description: "Alfama, Lisbon",
+        status: "LIVE",
+        landingPageJson: { rooms: [{}] },
       } as any
     ];
   }
