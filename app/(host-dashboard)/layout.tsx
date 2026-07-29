@@ -48,6 +48,13 @@ export default async function HostDashboardLayout({ children }: { children: Reac
           {children}
         </main>
       </div>
+
+      <footer className="border-t-2 border-foreground bg-primary text-primary-foreground">
+        <div className="mx-auto max-w-6xl px-4 py-8 flex flex-wrap items-center justify-between gap-3">
+          <p className="font-display text-xl font-extrabold">Prisma</p>
+          <p className="font-hand text-lg">made with ♡ for independent hosts</p>
+        </div>
+      </footer>
     </div>
   );
 }

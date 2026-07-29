@@ -31,7 +31,7 @@ export default async function HostBookings() {
           <table className="w-full text-sm">
             <thead className="bg-mustard/40 border-b-2 border-foreground">
               <tr className="text-left">
-                {["Guest", "Property", "Dates", "Price", "Status"].map((h) => (
+                {["Guest", "Room", "Dates", "Status", "Review"].map((h) => (
                   <th key={h} className="px-4 py-3 text-xs uppercase tracking-wider font-bold">{h}</th>
                 ))}
               </tr>
@@ -47,31 +47,25 @@ export default async function HostBookings() {
               {bookings.map((b) => (
                 <tr key={b.id} className="border-b border-foreground/10 last:border-0 align-top">
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-8 h-8 border-2 border-foreground">
-                        <AvatarImage src={b.customer.image || ""} />
-                        <AvatarFallback className="font-bold">{b.customer.name?.[0] || "?"}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-bold">{b.customer.name}</p>
-                        <p className="text-xs text-muted-foreground">{b.customer.email}</p>
-                      </div>
-                    </div>
+                    <p className="font-bold">{b.customer.name}</p>
+                    <p className="text-xs text-muted-foreground">{b.customer.email}</p>
                   </td>
-                  <td className="px-4 py-3 font-bold">{b.property.name}</td>
+                  <td className="px-4 py-3">{b.property.name}</td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     {format(new Date(b.checkIn), "MMM d")} → {format(new Date(b.checkOut), "MMM d, yyyy")}
                   </td>
-                  <td className="px-4 py-3 font-display font-extrabold">
-                    €{b.totalPrice}
-                  </td>
                   <td className="px-4 py-3">
                     <span className={cn(
-                      "inline-flex rounded-full border-2 border-foreground px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider",
-                      b.status === "CONFIRMED" ? "bg-cream text-foreground" : "bg-white text-muted-foreground"
+                      "inline-block rounded-full border-2 border-foreground px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider",
+                      b.status === "CONFIRMED" && "bg-cream",
+                      b.status === "PENDING" && "bg-mustard",
+                      b.status === "CANCELLED" && "bg-white text-muted-foreground",
                     )}>
                       {b.status}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 max-w-[280px]">
+                    <span className="text-xs text-muted-foreground">—</span>
                   </td>
                 </tr>
               ))}
