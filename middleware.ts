@@ -46,6 +46,11 @@ export default NextAuth(authConfig).auth((request) => {
     // We defer the strict role check to layout.tsx which can query the fresh DB state
   }
 
+  // Lock Hosts out of Guest routes
+  if (role === 'HOST' && (path === '/' || path === '/search' || isCustomerRoute)) {
+    return NextResponse.redirect(new URL('/host/dashboard', request.url))
+  }
+
   // Protect Customer routes
   if (isCustomerRoute) {
     if (!isAuthenticated) {
@@ -58,6 +63,8 @@ export default NextAuth(authConfig).auth((request) => {
 
 export const config = {
   matcher: [
+    '/',
+    '/search',
     '/login',
     '/admin/:path*',
     '/host/:path*',

@@ -58,9 +58,6 @@ export default async function HostDashboardLayout({ children }: { children: Reac
         </nav>
 
         <div className="p-4 border-t-2 border-foreground space-y-2 font-bold text-sm">
-          <Link href="/search" className="flex items-center gap-3 px-3 py-2 rounded-xl text-muted-foreground hover:bg-muted transition-colors">
-            Switch to Guest
-          </Link>
           <Link href="/host/settings" className="flex items-center gap-3 px-3 py-2 rounded-xl text-muted-foreground hover:bg-muted transition-colors">
             <Settings className="w-4 h-4" /> Settings
           </Link>
