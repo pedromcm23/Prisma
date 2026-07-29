@@ -89,6 +89,7 @@ export type Listing = {
   hostName: string;
   tags: string[];
   color: string; // tailwind bg gradient key
+  image?: string | null;
   lat: number; // 0-100 % on map
   lng: number; // 0-100 % on map
 };

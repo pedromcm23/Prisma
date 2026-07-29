@@ -189,12 +189,21 @@ function GridView({ listings, onOpen }: { listings: Listing[]; onOpen: (l: Listi
             <div className="tape" />
             <div
               className={cn(
-                "rounded-sm border-2 border-foreground bg-gradient-to-br p-4 flex flex-col justify-between",
-                l.color,
+                "rounded-sm border-2 border-foreground p-4 flex flex-col justify-between relative overflow-hidden",
+                !l.image && "bg-gradient-to-br",
+                !l.image && l.color,
                 i % 5 === 0 ? "aspect-[16/9]" : "aspect-[5/4]",
               )}
             >
-              <div className="flex items-center justify-between">
+              {l.image && (
+                <div
+                  className="absolute inset-0 bg-cover bg-center z-0"
+                  style={{ backgroundImage: `url(${l.image})` }}
+                />
+              )}
+              {l.image && <div className="absolute inset-0 bg-black/20 z-0" />}
+              
+              <div className="flex items-center justify-between relative z-10">
                 <div className="bg-white/90 border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
                   <Star className="w-3 h-3 fill-mustard" /> {l.rating}
                 </div>
@@ -252,7 +261,20 @@ function ListingDrawer({ listing, onClose }: { listing: Listing; onClose: () => 
         </SheetDescription>
       </SheetHeader>
 
-      <div className={cn("mt-4 rounded-xl border-2 border-foreground shadow-hard aspect-video bg-gradient-to-br", listing.color)} />
+      <div
+        className={cn(
+          "mt-4 rounded-xl border-2 border-foreground shadow-hard aspect-video relative overflow-hidden",
+          !listing.image && "bg-gradient-to-br",
+          !listing.image && listing.color
+        )}
+      >
+        {listing.image && (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${listing.image})` }}
+          />
+        )}
+      </div>
 
       <div className="mt-4 flex items-center gap-3">
         <div className="flex items-center gap-1 bg-white border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold">
@@ -284,9 +306,11 @@ function ListingDrawer({ listing, onClose }: { listing: Listing; onClose: () => 
         </div>
       </div>
 
-      <Button className="w-full mt-3 bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-12 font-bold hover:bg-primary/90">
-        View Direct Page <ArrowRight className="w-4 h-4 ml-1" />
-      </Button>
+      <Link href={`/stay/${listing.slug}`} target="_blank" rel="noopener noreferrer">
+        <Button className="w-full mt-3 bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-12 font-bold hover:bg-primary/90">
+          View Direct Page <ArrowRight className="w-4 h-4 ml-1" />
+        </Button>
+      </Link>
     </div>
   );
 }
