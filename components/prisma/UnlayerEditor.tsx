@@ -12,7 +12,14 @@ type EditorRef = {
 
 const EmailEditor = dynamic(() => import('react-email-editor'), { ssr: false });
 
-export function UnlayerEditor({ propertyId, onBack }: { propertyId: string, onBack: () => void }) {
+type Props = {
+  propertyId: string;
+  onBack: () => void;
+  /** Optional initial Unlayer design JSON (loaded when the editor is ready) */
+  initialDesign?: Record<string, any> | null;
+};
+
+export function UnlayerEditor({ propertyId, onBack, initialDesign }: Props) {
   const emailEditorRef = useRef<EditorRef>(null);
 
   const saveDesign = async () => {
@@ -20,7 +27,7 @@ export function UnlayerEditor({ propertyId, onBack }: { propertyId: string, onBa
     if (!unlayer) return;
 
     unlayer.exportHtml(async (data: any) => {
-      const { design, html } = data; // design is the JSON
+      const { design, html } = data;
       try {
         await savePropertyDesign(propertyId, design, html);
         alert("Design saved successfully!");
@@ -32,15 +39,18 @@ export function UnlayerEditor({ propertyId, onBack }: { propertyId: string, onBa
   };
 
   const onReady = () => {
-    // Unlayer is ready
     console.log("Unlayer editor is ready");
+    // If an initial design JSON was passed, load it into Unlayer
+    if (initialDesign && emailEditorRef.current?.editor) {
+      emailEditorRef.current.editor.loadDesign(initialDesign);
+    }
   };
 
   return (
     <div className="w-full flex flex-col h-[calc(100vh-80px)]">
       <div className="flex items-center justify-between p-4 bg-white border-b-2 border-foreground shadow-hard-sm z-10">
         <Button variant="outline" onClick={onBack} className="border-2 border-foreground font-bold">
-          ← Back to Wizard
+          ← Back to Preview
         </Button>
         <h2 className="font-display font-bold text-xl">Prisma Web Builder</h2>
         <Button onClick={saveDesign} className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard hover:bg-primary/90 font-bold">
@@ -54,7 +64,7 @@ export function UnlayerEditor({ propertyId, onBack }: { propertyId: string, onBa
           onReady={onReady}
           projectId={Number(process.env.NEXT_PUBLIC_UNLAYER_PROJECT_ID) || undefined}
           options={{
-            displayMode: 'web', // Force web mode
+            displayMode: 'web',
           }}
           style={{ minHeight: '100%', width: '100%' }}
         />

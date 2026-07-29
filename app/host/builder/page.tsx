@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { OnboardingWizard } from "@/components/prisma/OnboardingWizard";
 import { BoutiqueSite } from "@/components/prisma/BoutiqueSite";
+import { UnlayerEditor } from "@/components/prisma/UnlayerEditor";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
 
 export default function BuilderPage() {
@@ -26,7 +27,13 @@ export default function BuilderPage() {
     ];
     return d;
   });
-  const [view, setView] = useState<"form" | "site">("form");
+
+  const [view, setView] = useState<"form" | "site" | "unlayer">("form");
+  // Stores the Unlayer design JSON once a user has previously saved via Unlayer
+  const [savedDesign, setSavedDesign] = useState<Record<string, any> | null>(null);
+
+  // A stable dummy propertyId for the builder page (replace with real DB id when persisting)
+  const propertyId = "preview";
 
   return (
     <div>
@@ -35,7 +42,8 @@ export default function BuilderPage() {
           ← Prisma home
         </Link>
       </div>
-      {view === "form" ? (
+
+      {view === "form" && (
         <OnboardingWizard
           data={data}
           setData={setData}
@@ -44,8 +52,26 @@ export default function BuilderPage() {
             if (typeof window !== "undefined") window.scrollTo({ top: 0 });
           }}
         />
-      ) : (
-        <BoutiqueSite data={data} setData={setData} onBack={() => setView("form")} />
+      )}
+
+      {view === "site" && (
+        <BoutiqueSite
+          data={data}
+          setData={setData}
+          onBack={() => setView("form")}
+          onOpenUnlayer={() => {
+            setView("unlayer");
+            if (typeof window !== "undefined") window.scrollTo({ top: 0 });
+          }}
+        />
+      )}
+
+      {view === "unlayer" && (
+        <UnlayerEditor
+          propertyId={propertyId}
+          onBack={() => setView("site")}
+          initialDesign={savedDesign}
+        />
       )}
     </div>
   );

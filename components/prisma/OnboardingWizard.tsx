@@ -5,10 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
-  Sparkles, ArrowRight, ArrowLeft, Plus, Trash2, Upload, X, Star, Link2, Heart,
+  Sparkles, ArrowRight, ArrowLeft, Plus, Trash2, Upload, X, Star, Link2, Heart, Palette,
 } from "lucide-react";
 import type { PropertyData, RoomType } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
+import { TemplatePicker } from "./TemplatePicker";
 
 type Props = {
   data: PropertyData;
@@ -21,7 +22,7 @@ const AMENITY_SUGGESTIONS = ["Wi-Fi", "Terrace", "Kitchen", "Sea view", "Balcony
 export function OnboardingWizard({ data, setData, onGenerate }: Props) {
   const [step, setStep] = useState(1);
   const [importing, setImporting] = useState(false);
-  const total = 4;
+  const total = 5;
 
   const update = <K extends keyof PropertyData>(k: K, v: PropertyData[K]) =>
     setData({ ...data, [k]: v });
@@ -36,7 +37,8 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
     (step === 1 && data.name.trim() && data.location.trim() && data.rooms.length > 0) ||
     (step === 2 && data.specials.every((s) => s.trim())) ||
     step === 3 ||
-    step === 4;
+    step === 4 ||
+    step === 5;
 
   const simulateImport = async () => {
     if (!data.importUrl.trim()) {
@@ -95,6 +97,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
             {step === 2 && "The magic ingredients"}
             {step === 3 && "Meet the host"}
             {step === 4 && "Guests love you — prove it"}
+            {step === 5 && "Your brand & template"}
           </h2>
         </div>
 
@@ -254,6 +257,15 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
           </div>
         )}
 
+        {step === 5 && (
+          <div className="space-y-2">
+            <p className="text-muted-foreground -mt-2 mb-4">
+              Pick your template style, brand colour, and optionally upload your logo. You can fine-tune everything after generating your site.
+            </p>
+            <TemplatePicker data={data} setData={setData} />
+          </div>
+        )}
+
         {/* Nav */}
         <div className="mt-8 flex items-center justify-between">
           <Button variant="outline" disabled={step === 1}
@@ -270,7 +282,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
           ) : (
             <Button onClick={onGenerate}
               className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-12 px-6 hover:bg-primary/90 text-base font-bold">
-              <Sparkles className="w-5 h-5 mr-2" /> Generate My Boutique Website
+              <Palette className="w-5 h-5 mr-2" /> Generate My Website
             </Button>
           )}
         </div>

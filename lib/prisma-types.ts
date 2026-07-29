@@ -6,6 +6,8 @@ export type RoomType = {
   photos: string[]; // data URLs
 };
 
+export type TemplateId = "boutique" | "minimal" | "tropical" | "luxury" | "rustic";
+
 export type PropertyData = {
   name: string;
   location: string;
@@ -19,6 +21,10 @@ export type PropertyData = {
   hostInterests: string;
   hostLoves: string;
   importUrl: string;
+  // Brand fields (Step 5)
+  templateId: TemplateId;
+  brandColor: string;   // hex, e.g. "#D96B43"
+  brandLogo: string;    // base64 data URL or empty string
 };
 
 export const emptyData = (): PropertyData => ({
@@ -45,6 +51,9 @@ export const emptyData = (): PropertyData => ({
   hostInterests: "",
   hostLoves: "",
   importUrl: "",
+  templateId: "boutique",
+  brandColor: "#D96B43",
+  brandLogo: "",
 });
 
 export type SpontaneousStay = Listing & {
