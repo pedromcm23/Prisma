@@ -63,6 +63,10 @@ export default async function PublicPropertyPage({ params }: { params: { id: str
   // Ensure minimum structure for data to prevent runtime crashes
   data.name = property.name || data.name || "Your Stay";
   data.location = property.description || data.location || "";
+  data.specials = data.specials || emptyData().specials;
+  data.directions = data.directions || emptyData().directions;
+  data.reviews = data.reviews || emptyData().reviews;
+  data.rooms = data.rooms || emptyData().rooms;
   if (!data.rooms || !data.rooms.length) {
     data.rooms = [{ name: "Standard Room", price: 100, amenities: [], photos: [] }];
   }

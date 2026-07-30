@@ -33,6 +33,10 @@ export default async function PreviewWebsite({
     data = { ...emptyData(), ...json };
     data.name = json.name || property.name || "Your Stay";
     data.location = json.location || property.description || "";
+    data.specials = data.specials || emptyData().specials;
+    data.directions = data.directions || emptyData().directions;
+    data.reviews = data.reviews || emptyData().reviews;
+    data.rooms = data.rooms || emptyData().rooms;
     if (!data.rooms || !data.rooms.length) {
       data.rooms = [{ name: "Standard Room", price: 100, amenities: [], photos: [] }];
     }
