@@ -118,6 +118,7 @@ function GridView({ listings }: { listings: Listing[] }) {
           <Link
             href={`/stay/${l.slug}`}
             target="_blank"
+            rel="noopener noreferrer"
             key={l.slug}
             className={cn(
               "polaroid text-left group transition-transform hover:-translate-y-1",
