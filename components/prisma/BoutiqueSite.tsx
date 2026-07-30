@@ -59,8 +59,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
     if (setData) setData({ ...data, [k]: v });
   };
 
-
-
+  const allPhotos = data.rooms?.flatMap((r) => r.photos).filter(Boolean) || [];
   return (
     <div className="min-h-screen" style={brandKitCssVars(brandKit)}>
       {/* Sticky editor banner */}
@@ -206,22 +205,34 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
           <div className="relative h-[420px]">
             <div className="polaroid absolute top-2 left-4 w-56 rotate-[-6deg]">
               <div className="tape" />
-              <div className="aspect-[4/5] bg-gradient-to-br from-mustard to-primary/60 rounded-sm flex items-center justify-center">
-                <Sun className="w-16 h-16 text-white/90" strokeWidth={1.5} />
+              <div className="aspect-[4/5] bg-gradient-to-br from-mustard to-primary/60 rounded-sm flex items-center justify-center overflow-hidden">
+                {allPhotos[0] ? (
+                  <img src={allPhotos[0]} alt="Hero 1" className="w-full h-full object-cover" />
+                ) : (
+                  <Sun className="w-16 h-16 text-white/90" strokeWidth={1.5} />
+                )}
               </div>
               <p className="font-hand text-lg text-center mt-2">morning light ☀</p>
             </div>
             <div className="polaroid absolute top-16 right-2 w-52 rotate-[5deg]">
               <div className="tape" />
-              <div className="aspect-square bg-gradient-to-br from-accent to-accent/50 rounded-sm flex items-center justify-center">
-                <Waves className="w-14 h-14 text-white/90" strokeWidth={1.5} />
+              <div className="aspect-square bg-gradient-to-br from-accent to-accent/50 rounded-sm flex items-center justify-center overflow-hidden">
+                {allPhotos[1] ? (
+                  <img src={allPhotos[1]} alt="Hero 2" className="w-full h-full object-cover" />
+                ) : (
+                  <Waves className="w-14 h-14 text-white/90" strokeWidth={1.5} />
+                )}
               </div>
               <p className="font-hand text-lg text-center mt-2">by the sea 🌊</p>
             </div>
             <div className="polaroid absolute bottom-0 left-1/2 -translate-x-1/2 w-56 rotate-[-2deg]">
               <div className="tape" />
-              <div className="aspect-[5/4] bg-gradient-to-br from-primary to-primary/60 rounded-sm flex items-center justify-center">
-                <Coffee className="w-14 h-14 text-white/90" strokeWidth={1.5} />
+              <div className="aspect-[5/4] bg-gradient-to-br from-primary to-primary/60 rounded-sm flex items-center justify-center overflow-hidden">
+                {allPhotos[2] ? (
+                  <img src={allPhotos[2]} alt="Hero 3" className="w-full h-full object-cover" />
+                ) : (
+                  <Coffee className="w-14 h-14 text-white/90" strokeWidth={1.5} />
+                )}
               </div>
               <p className="font-hand text-lg text-center mt-2">breakfast on the terrace</p>
             </div>
@@ -240,11 +251,16 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
             const Icon = ILLUSTRATIONS[i % ILLUSTRATIONS.length];
             const rotate = ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]"][i];
             const bg = ["bg-mustard/40", "bg-primary/25", "bg-accent/25"][i];
+            const photoIndex = i + 3; // offset by 3 since hero uses 0, 1, 2
             return (
               <div key={i} className={cn("polaroid relative", rotate)}>
                 <div className="tape" />
-                <div className={cn("aspect-[5/4] rounded-sm flex items-center justify-center border-2 border-foreground", bg)}>
-                  <Icon className="w-16 h-16 text-foreground" strokeWidth={1.5} />
+                <div className={cn("aspect-[5/4] rounded-sm flex items-center justify-center border-2 border-foreground overflow-hidden", bg)}>
+                  {allPhotos[photoIndex] ? (
+                    <img src={allPhotos[photoIndex]} alt={`Special ${i + 1}`} className="w-full h-full object-cover" />
+                  ) : (
+                    <Icon className="w-16 h-16 text-foreground" strokeWidth={1.5} />
+                  )}
                 </div>
                 <div className="mt-3 px-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-primary">
