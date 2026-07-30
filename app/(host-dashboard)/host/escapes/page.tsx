@@ -2,11 +2,10 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CalendarPanel } from "./CalendarPanel";
 
-export default async function FlashDeals({
-  searchParams,
-}: {
-  searchParams: { id?: string };
+export default async function FlashDeals(props: {
+  searchParams: Promise<{ id?: string }>;
 }) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   const hostId = session?.user?.id;
 

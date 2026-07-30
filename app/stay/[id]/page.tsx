@@ -4,7 +4,8 @@ import { BoutiqueSite } from "@/components/prisma/BoutiqueSite";
 import { themeToBrandKit } from "@/lib/brand-kit";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
 
-export default async function PublicPropertyPage({ params }: { params: { id: string } }) {
+export default async function PublicPropertyPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   let property = await prisma.property.findUnique({
     where: { id: params.id },
   });

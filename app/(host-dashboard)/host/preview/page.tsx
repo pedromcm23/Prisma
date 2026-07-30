@@ -4,15 +4,16 @@ import { PreviewClient } from "./preview-client";
 import { emptyData, PropertyData } from "@/lib/prisma-types";
 import { PropertySelector } from "./property-selector";
 
-export default async function PreviewWebsite({
-  searchParams,
-}: {
-  searchParams: { id?: string };
+export default async function HostPreview(props: {
+  searchParams: Promise<{ id?: string }>;
 }) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   const hostId = session?.user?.id;
 
-  if (!hostId) return null;
+  if (!hostId) {
+    return <div>Not authenticated</div>;
+  }
 
   const properties = await prisma.property.findMany({
     where: { hostId },

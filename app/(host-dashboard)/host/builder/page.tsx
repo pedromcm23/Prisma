@@ -3,11 +3,10 @@ import { emptyData, type PropertyData } from "@/lib/prisma-types";
 import { BuilderClient } from "./builder-client";
 import { auth } from "@/auth";
 
-export default async function BuilderPage({
-  searchParams,
-}: {
-  searchParams: { id?: string };
+export default async function BuilderPage(props: {
+  searchParams: Promise<{ id?: string }>;
 }) {
+  const searchParams = await props.searchParams;
   const session = await auth();
   const hostId = session?.user?.id;
   
