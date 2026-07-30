@@ -3,6 +3,9 @@ import type { NextAuthConfig } from "next-auth"
 
 export const authConfig = {
   providers: [Google],
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
     jwt({ token, user }) {
       if (user) {

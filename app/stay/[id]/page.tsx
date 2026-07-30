@@ -6,10 +6,15 @@ import { emptyData, type PropertyData } from "@/lib/prisma-types";
 
 export default async function PublicPropertyPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  let property = await prisma.property.findUnique({
-    where: { id: params.id },
-    include: { host: true },
-  });
+  let property = null;
+  try {
+    property = await prisma.property.findUnique({
+      where: { id: params.id },
+      include: { host: true },
+    });
+  } catch (e) {
+    // ID might be a slug and not a valid CUID, which causes Prisma to throw
+  }
 
   if (!property) {
     // Fallback to searching by slug (normalized name) since frontend generates URLs by name

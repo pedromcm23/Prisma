@@ -131,7 +131,7 @@ function GridView({ listings }: { listings: Listing[] }) {
               i % 5 === 0 ? "aspect-[16/9]" : "aspect-[5/4]",
             )}>
               <img
-                src={l.photo}
+                src={l.image || ""}
                 alt={`${l.name}, boutique stay in ${l.location}`}
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -191,7 +191,7 @@ function MapView({ listings }: { listings: Listing[] }) {
               <div className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap group-hover:-translate-y-0.5 transition-transform">€{l.price}</div>
               <div className="w-3 h-3 bg-primary border-2 border-foreground rotate-45 -mt-1.5" />
               <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-full mt-2 bg-cream border-2 border-foreground shadow-hard-sm rounded-lg overflow-hidden w-40 text-left">
-                <img src={l.photo} alt="" className="w-full h-20 object-cover border-b-2 border-foreground" />
+                <img src={l.image || ""} alt="" className="w-full h-20 object-cover border-b-2 border-foreground" />
                 <p className="px-2 py-1 text-xs font-bold">{l.name}</p>
               </div>
             </div>
