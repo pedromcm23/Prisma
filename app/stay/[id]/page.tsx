@@ -54,7 +54,8 @@ export default async function PublicPropertyPage({ params }: { params: { id: str
   // Parse JSON or provide fallback empty data
   let data: PropertyData;
   try {
-    data = (property.landingPageJson as any) || emptyData();
+    const json = property.landingPageJson as any;
+    data = { ...emptyData(), ...(json || {}) };
   } catch {
     data = emptyData();
   }
