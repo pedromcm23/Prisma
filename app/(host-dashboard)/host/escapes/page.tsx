@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CalendarPanel } from "./CalendarPanel";
+import { PropertySelector } from "../preview/property-selector";
 
 export default async function FlashDeals(props: {
   searchParams: Promise<{ id?: string }>;
@@ -23,6 +24,15 @@ export default async function FlashDeals(props: {
   }
 
   return (
-    <CalendarPanel key={activeId || 'none'} properties={properties} activeId={activeId} />
+    <div>
+      <div className="mb-4 flex items-center justify-between bg-white p-4 hand-border">
+        <div>
+          <p className="font-hand text-xl text-accent">Availability</p>
+          <h2 className="text-2xl font-display font-extrabold">Calendar</h2>
+        </div>
+        <PropertySelector properties={properties} activeId={activeId} basePath="/host/escapes" />
+      </div>
+      <CalendarPanel key={activeId || 'none'} properties={properties} activeId={activeId} />
+    </div>
   );
 }

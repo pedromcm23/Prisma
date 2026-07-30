@@ -40,7 +40,7 @@ export default async function BuilderPage(props: {
     // Ensure the host owns it
     if (property && property.hostId === hostId && property.landingPageJson) {
       propertyId = property.id;
-      initialData = property.landingPageJson as unknown as PropertyData;
+      initialData = { ...initialData, ...(property.landingPageJson as any) };
     }
   }
 

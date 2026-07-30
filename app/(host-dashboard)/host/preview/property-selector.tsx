@@ -10,7 +10,7 @@ export function PropertySelector({ properties, activeId, basePath }: { propertie
   return (
     <select 
       value={activeId || ""}
-      onChange={(e) => router.push(`${basePath}?id=${e.target.value}`)}
+      onChange={(e) => window.location.href = `${basePath}?id=${e.target.value}`}
       className="ml-auto text-sm border-2 border-foreground shadow-hard-sm rounded-lg h-8 px-2 font-bold bg-white"
     >
       {properties.map(p => (

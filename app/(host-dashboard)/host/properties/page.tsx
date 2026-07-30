@@ -72,10 +72,7 @@ export default async function HostProperties() {
                     Edit Property
                   </Button>
                 </Link>
-                <form action={async () => {
-                  "use server";
-                  await deleteProperty(property.id);
-                }}>
+                <form action={deleteProperty.bind(null, property.id)}>
                   <Button type="submit" variant="destructive" className="border-2 border-foreground shadow-hard-sm rounded-xl font-bold bg-accent text-accent-foreground hover:bg-accent/90">
                     Delete
                   </Button>
