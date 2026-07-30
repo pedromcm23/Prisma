@@ -8,11 +8,12 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
   const params = await props.params;
   let property = await prisma.property.findUnique({
     where: { id: params.id },
+    include: { host: true },
   });
 
   if (!property) {
     // Fallback to searching by slug (normalized name) since frontend generates URLs by name
-    const all = await prisma.property.findMany();
+    const all = await prisma.property.findMany({ include: { host: true } });
     property = all.find((p) => {
       const slug = (p.name || "your-stay").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       return slug === params.id;
@@ -63,6 +64,7 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
 
   // Ensure minimum structure for data to prevent runtime crashes
   data.name = property.name || data.name || "Your Stay";
+  data.hostName = property.host?.name || data.hostName || "Unknown Host";
   data.location = property.description || data.location || "";
   data.specials = data.specials || emptyData().specials;
   data.directions = data.directions || emptyData().directions;

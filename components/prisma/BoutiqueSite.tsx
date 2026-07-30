@@ -627,7 +627,14 @@ function DatePickerField({
             mode="single"
             selected={date}
             onSelect={onChange}
-            disabled={minDate ? (d) => d <= minDate : undefined}
+            disabled={(d) => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              if (d < today) return true;
+              if (minDate && d <= minDate) return true;
+              return false;
+            }}
+            fromDate={new Date()}
             initialFocus
             className={cn("p-3 pointer-events-auto")}
           />
