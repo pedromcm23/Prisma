@@ -118,7 +118,7 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
             Discover
           </TabBtn>
           <TabBtn active={tab === "spontaneous"} onClick={() => setTab("spontaneous")} icon={<Zap className="w-3.5 h-3.5" />}>
-            Spontaneous Escapes
+            Flash Deals
           </TabBtn>
           <TabBtn active={tab === "share"} onClick={() => setTab("share")} icon={<Heart className="w-3.5 h-3.5" />}>
             Share the Love
@@ -234,7 +234,7 @@ function GridView({ listings }: { listings: Listing[] }) {
                   <span className="text-xs text-muted-foreground"> / night</span>
                 </div>
                 <span className="text-xs font-bold text-primary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  View <ArrowRight className="w-3 h-3" />
+                  Visit site <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
             </div>

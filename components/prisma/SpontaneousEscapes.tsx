@@ -28,61 +28,78 @@ export function SpontaneousEscapes({ listings }: { listings?: Listing[] }) {
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
         {stays.map((s, i) => (
           <article
             key={s.slug}
             className={cn(
-              "hand-border bg-cream overflow-hidden flex flex-col",
-              i % 2 === 0 ? "sm:rotate-[-0.4deg]" : "sm:rotate-[0.4deg]",
+              "polaroid text-left group transition-transform hover:-translate-y-1 block flex flex-col",
+              i % 2 === 0 ? "rotate-[-1deg]" : "rotate-[1deg]"
             )}
           >
-            <div className={cn("relative aspect-[16/10] bg-gradient-to-br border-b-2 border-foreground", s.color)}>
-              <div className="absolute top-3 left-3 inline-flex items-center gap-1 bg-mustard border-2 border-foreground rounded-full px-3 py-1 text-xs font-bold shadow-hard-sm">
-                <Zap className="w-3 h-3" /> Available {s.window.toLowerCase()}
+            <div className="tape" />
+            <div
+              className={cn(
+                "rounded-sm border-2 border-foreground p-4 flex flex-col justify-between relative overflow-hidden aspect-[4/3]",
+                !s.image && "bg-gradient-to-br",
+                !s.image && s.color,
+              )}
+            >
+              {s.image && (
+                <div
+                  className="absolute inset-0 bg-cover bg-center z-0"
+                  style={{ backgroundImage: `url(${s.image})` }}
+                />
+              )}
+              {s.image && <div className="absolute inset-0 bg-black/30 z-0" />}
+
+              {/* Top overlay */}
+              <div className="flex items-center justify-between relative z-10">
+                <div className="bg-mustard border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
+                  <Zap className="w-3 h-3" /> Available {s.window}
+                </div>
+                <div className="bg-white/90 border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-mustard" /> {s.rating}
+                </div>
               </div>
-              <div className="absolute top-3 right-3 inline-flex items-center gap-1 bg-cream border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold">
-                <Star className="w-3 h-3 fill-mustard" /> {s.rating}
-              </div>
-              <div className="absolute bottom-3 left-3 inline-flex items-center gap-1 bg-foreground text-cream rounded-full px-2 py-0.5 text-xs font-bold">
-                <Clock className="w-3 h-3" /> {s.hoursLeft}h left
+
+              {/* Bottom overlay */}
+              <div className="relative z-10 flex flex-col gap-2">
+                <div className="inline-flex self-start items-center gap-1 bg-foreground text-cream rounded-full px-2 py-0.5 text-xs font-bold">
+                  <Clock className="w-3 h-3" /> {s.hoursLeft}h left
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {s.perks.map((p) => (
+                    <span key={p} className="text-[10px] font-bold uppercase tracking-wider bg-white/90 border border-foreground rounded-full px-2 py-0.5">
+                      + {p}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="p-5 flex flex-col gap-3 flex-1">
-              <div>
+            <div className="mt-4 px-1 flex flex-col flex-1">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary">
-                  <MapPin className="w-3 h-3" /> {s.neighborhood} · {s.location}
+                  <MapPin className="w-3 h-3" /> {s.neighborhood}
                 </div>
-                <h3 className="mt-1 font-display text-2xl font-extrabold leading-tight">{s.name}</h3>
-                <p className="font-hand text-lg text-muted-foreground leading-tight">{s.tagline}</p>
+                <div className="text-xs font-bold uppercase text-muted-foreground">
+                  Host: {s.hostName}
+                </div>
               </div>
-
-              <div className="bg-mustard/40 border-2 border-dashed border-foreground/40 rounded-xl p-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-                  ✿ Host is throwing in
-                </p>
-                <ul className="text-sm space-y-0.5">
-                  {s.perks.map((p) => (
-                    <li key={p} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary" /> {p}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-auto flex items-end justify-between gap-3">
+              
+              <p className="font-display font-extrabold text-2xl leading-tight mt-1">{s.name}</p>
+              <p className="font-hand text-lg text-muted-foreground leading-tight">{s.tagline}</p>
+              
+              <div className="mt-auto pt-4 flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-xs text-muted-foreground">
-                    Host: <span className="font-bold text-foreground">{s.hostName}</span>
-                  </p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm text-muted-foreground line-through">€{s.originalPrice}</span>
-                    <span className="font-display text-2xl font-extrabold">€{s.dealPrice}</span>
+                    <span className="font-display font-extrabold text-2xl text-accent">€{s.dealPrice}</span>
                     <span className="text-xs text-muted-foreground">/ night</span>
                   </div>
                 </div>
-                <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-11 font-bold hover:bg-primary/90">
+                <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-10 font-bold hover:bg-primary/90">
                   Grab it <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>

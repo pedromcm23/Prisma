@@ -158,114 +158,63 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
       )}
 
       {/* Main Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-cream to-transparent" />
-        <div className="mx-auto max-w-6xl px-4 pt-16 pb-20 grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-foreground bg-white px-3 py-1 shadow-hard-sm">
-              <MapPin className="w-3.5 h-3.5 text-primary" />
-              <Editable
-                value={data.location}
-                onChange={(v) => set("location", v)}
-                editable={editing}
-                as="span"
-                className="text-xs font-bold uppercase tracking-wider"
-              />
-            </div>
-            <Editable
-              value={data.name}
-              onChange={(v) => set("name", v)}
-              editable={editing}
-              as="h1"
-              className="mt-4 text-5xl sm:text-7xl font-display font-extrabold leading-[0.95]"
-            />
-            <Editable
-              value={data.tagline || "A hand-made little world, ready for your arrival."}
-              onChange={(v) => set("tagline", v)}
-              editable={editing}
-              as="p"
-              multiline
-              className="mt-5 text-lg text-muted-foreground max-w-md"
-            />
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button
-                onClick={() => {
-                  document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-12 px-6 text-base font-bold hover:bg-primary/90"
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Book Direct
-              </Button>
-              <span className="font-hand text-2xl text-accent">no fees · real host ✿</span>
-            </div>
-          </div>
+      <section className="relative min-h-[80vh] flex flex-col justify-end">
+        <div 
+          className="absolute inset-0 -z-20 bg-cover bg-center"
+          style={{ backgroundImage: `url(${allPhotos[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop'})` }}
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        
+        {/* Back to Prisma button */}
+        <div className="absolute top-6 left-6 z-10">
+          <Link href="/">
+            <Button variant="outline" className="bg-white/90 text-foreground border-2 border-foreground shadow-hard rounded-full h-10 px-5 text-xs font-bold hover:bg-white hover:-translate-y-0.5 transition-transform">
+              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" /> BACK TO PRISMA
+            </Button>
+          </Link>
+        </div>
 
-          {/* Hero visual collage */}
-          <div className="relative h-[420px]">
-            <div className="polaroid absolute top-2 left-4 w-56 rotate-[-6deg]">
-              <div className="tape" />
-              <div className="aspect-[4/5] bg-gradient-to-br from-mustard to-primary/60 rounded-sm flex items-center justify-center overflow-hidden">
-                {allPhotos[0] ? (
-                  <img src={allPhotos[0]} alt="Hero 1" className="w-full h-full object-cover" />
-                ) : (
-                  <Sun className="w-16 h-16 text-white/90" strokeWidth={1.5} />
-                )}
-              </div>
-              <p className="font-hand text-lg text-center mt-2">morning light ☀</p>
-            </div>
-            <div className="polaroid absolute top-16 right-2 w-52 rotate-[5deg]">
-              <div className="tape" />
-              <div className="aspect-square bg-gradient-to-br from-accent to-accent/50 rounded-sm flex items-center justify-center overflow-hidden">
-                {allPhotos[1] ? (
-                  <img src={allPhotos[1]} alt="Hero 2" className="w-full h-full object-cover" />
-                ) : (
-                  <Waves className="w-14 h-14 text-white/90" strokeWidth={1.5} />
-                )}
-              </div>
-              <p className="font-hand text-lg text-center mt-2">by the sea 🌊</p>
-            </div>
-            <div className="polaroid absolute bottom-0 left-1/2 -translate-x-1/2 w-56 rotate-[-2deg]">
-              <div className="tape" />
-              <div className="aspect-[5/4] bg-gradient-to-br from-primary to-primary/60 rounded-sm flex items-center justify-center overflow-hidden">
-                {allPhotos[2] ? (
-                  <img src={allPhotos[2]} alt="Hero 3" className="w-full h-full object-cover" />
-                ) : (
-                  <Coffee className="w-14 h-14 text-white/90" strokeWidth={1.5} />
-                )}
-              </div>
-              <p className="font-hand text-lg text-center mt-2">breakfast on the terrace</p>
-            </div>
+        <div className="mx-auto max-w-6xl w-full px-4 pb-16">
+          <Editable
+            value={data.location}
+            onChange={(v) => set("location", v)}
+            editable={editing}
+            as="p"
+            className="text-white/90 text-sm font-bold uppercase tracking-[0.2em]"
+          />
+          <Editable
+            value={data.tagline || "A hand-made little world, ready for your arrival."}
+            onChange={(v) => set("tagline", v)}
+            editable={editing}
+            as="h1"
+            className="mt-4 text-5xl sm:text-7xl lg:text-8xl font-display font-extrabold leading-[0.95] text-white max-w-4xl"
+          />
+          <div className="mt-6 text-lg text-white/90 max-w-xl">
+            An independent house of {data.rooms?.length || 1} rooms, kept by <span className="font-bold">{data.hostName || "your host"}</span>. 
+            Reserve directly — no platform fees, no intermediaries.
           </div>
         </div>
       </section>
 
-      {/* STORYBOARD */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mb-10 text-center">
-          <p className="font-hand text-3xl text-accent">the storyboard</p>
-          <h2 className="text-4xl sm:text-5xl font-display font-bold">Three little reasons to love it</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {data.specials.map((s, i) => {
-            const Icon = ILLUSTRATIONS[i % ILLUSTRATIONS.length];
-            const rotate = ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]"][i];
-            const bg = ["bg-mustard/40", "bg-primary/25", "bg-accent/25"][i];
-            const photoIndex = i + 3; // offset by 3 since hero uses 0, 1, 2
-            return (
-              <div key={i} className={cn("polaroid relative", rotate)}>
-                <div className="tape" />
-                <div className={cn("aspect-[5/4] rounded-sm flex items-center justify-center border-2 border-foreground overflow-hidden", bg)}>
-                  {allPhotos[photoIndex] ? (
-                    <img src={allPhotos[photoIndex]} alt={`Special ${i + 1}`} className="w-full h-full object-cover" />
-                  ) : (
-                    <Icon className="w-16 h-16 text-foreground" strokeWidth={1.5} />
-                  )}
-                </div>
-                <div className="mt-3 px-1">
-                  <p className="text-xs font-bold uppercase tracking-wider text-primary">
-                    N°0{i + 1}
-                  </p>
+      {/* THE HOUSE */}
+      <section className="bg-cream text-foreground">
+        <div className="mx-auto max-w-6xl px-4 py-20 md:py-32 grid md:grid-cols-3 gap-12 md:gap-8">
+          <div className="md:col-span-1">
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground/50 sticky top-24">
+              The House
+            </h2>
+          </div>
+          <div className="md:col-span-2">
+            <p className="text-3xl sm:text-4xl lg:text-5xl font-display leading-[1.2] text-foreground">
+              {data.name || "This home"} sits in {data.location || "a beautiful place"} — restored slowly, room by room, with the kind of light you plan a day around.
+            </p>
+            
+            <div className="mt-16 grid sm:grid-cols-3 gap-8">
+              {data.specials.map((s, i) => (
+                <div key={i} className="border-t border-foreground/20 pt-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2">
+                    Detail N°0{i + 1}
+                  </h3>
                   <Editable
                     value={s}
                     onChange={(v) => {
@@ -276,12 +225,12 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
                     editable={editing}
                     as="p"
                     multiline
-                    className="mt-1 font-hand text-2xl leading-tight"
+                    className="text-sm text-foreground/80 leading-relaxed"
                   />
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
