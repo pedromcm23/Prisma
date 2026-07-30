@@ -18,11 +18,15 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
 
   if (!property) {
     // Fallback to searching by slug (normalized name) since frontend generates URLs by name
-    const all = await prisma.property.findMany({ include: { host: true } });
-    property = all.find((p) => {
-      const slug = (p.name || "your-stay").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      return slug === params.id;
-    }) || null;
+    try {
+      const all = await prisma.property.findMany({ include: { host: true } });
+      property = all.find((p) => {
+        const slug = (p.name || "your-stay").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        return slug === params.id;
+      }) || null;
+    } catch (e) {
+      console.error("Failed to query DB for slug:", e);
+    }
   }
 
   if (!property) {

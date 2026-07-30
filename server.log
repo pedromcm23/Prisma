@@ -1,0 +1,27 @@
+
+> prisma@1.0.0 start
+> next start
+
+▲ Next.js 16.2.11
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.80:3000
+✓ Ready in 92ms
+⨯ Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.property.findMany()` invocation:
+
+
+Can't reach database server at base
+    at async k (.next/server/chunks/ssr/[root-of-the-server]__1kcxyzk._.js:1:7430) {
+  code: 'P1001',
+  meta: {
+    modelName: 'Property',
+    driverAdapterError: Error [DriverAdapterError]: DatabaseNotReachable
+        at F.onError (.next/server/chunks/ssr/_112tdum._.js:1:11637)
+        at F.performIO (.next/server/chunks/ssr/_112tdum._.js:1:11578)
+        at async F.queryRaw (.next/server/chunks/ssr/_112tdum._.js:1:8166) {
+      [cause]: [Object]
+    }
+  },
+  clientVersion: '7.9.0',
+  digest: '1716690630'
+}
