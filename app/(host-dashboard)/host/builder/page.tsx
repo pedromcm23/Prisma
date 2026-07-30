@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
 import { BuilderClient } from "./builder-client";
 import { auth } from "@/auth";
+import { themeToBrandKit } from "@/lib/brand-kit";
 
 export default async function BuilderPage(props: {
   searchParams: Promise<{ id?: string }>;
@@ -31,6 +32,7 @@ export default async function BuilderPage(props: {
   })();
 
   let propertyId = undefined;
+  let initialBrandKit = themeToBrandKit("folk-pop");
 
   if (searchParams.id && hostId) {
     const property = await prisma.property.findUnique({
@@ -40,11 +42,20 @@ export default async function BuilderPage(props: {
     // Ensure the host owns it
     if (property && property.hostId === hostId && property.landingPageJson) {
       propertyId = property.id;
+      
+      try {
+        const dbKit = property.brandKitJson as any;
+        if (dbKit && dbKit.themeId) {
+          // Merge dbKit on top of the defaults for that theme
+          initialBrandKit = { ...themeToBrandKit(dbKit.themeId), ...dbKit };
+        }
+      } catch {}
+
       initialData = { ...initialData, ...(property.landingPageJson as any) };
     }
   }
 
   return (
-    <BuilderClient initialData={initialData} propertyId={propertyId} />
+    <BuilderClient initialData={initialData} initialBrandKit={initialBrandKit} propertyId={propertyId} />
   );
 }

@@ -78,7 +78,9 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
     try {
       const dbKit = property.brandKitJson as any;
       if (dbKit && dbKit.themeId) {
-        brandKit = dbKit;
+        // Merge dbKit on top of the defaults for that theme
+        // This ensures any newly added fields (like foreground/cream) are populated for old DB records
+        brandKit = { ...themeToBrandKit(dbKit.themeId), ...dbKit };
       }
     } catch {}
   }
