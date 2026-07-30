@@ -86,7 +86,6 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
   return (
     <BoutiqueSite 
       data={data} 
-      setData={() => {}} 
       readOnly={true} 
       initialBrandKit={brandKit}
     />

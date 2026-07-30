@@ -28,7 +28,7 @@ const ILLUSTRATIONS = [Coffee, Sun, Waves];
 
 type Props = {
   data: PropertyData;
-  setData: (d: PropertyData) => void;
+  setData?: (d: PropertyData) => void;
   onBack?: () => void;
   onPublish?: (kit: BrandKit) => void;
   isPublishing?: boolean;
@@ -55,8 +55,9 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
     ? `${window.location.origin}/stay/${slug}`
     : `/stay/${slug}`;
 
-  const set = <K extends keyof PropertyData>(k: K, v: PropertyData[K]) =>
-    setData({ ...data, [k]: v });
+  const set = <K extends keyof PropertyData>(k: K, v: PropertyData[K]) => {
+    if (setData) setData({ ...data, [k]: v });
+  };
 
 
 
