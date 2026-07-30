@@ -64,7 +64,7 @@ export default async function PreviewWebsite({
         <PropertySelector properties={properties} activeId={property?.id} basePath="/host/preview" />
       </div>
       <div className="bg-white">
-        <PreviewClient key={property?.id || "fallback"} initialData={data} />
+        <PreviewClient key={property?.id || "fallback"} initialData={data} propertyId={property?.id} />
       </div>
     </div>
   );

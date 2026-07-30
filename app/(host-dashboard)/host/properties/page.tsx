@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Home, ExternalLink, Settings, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { deleteProperty } from "@/app/actions/property";
 
 export default async function HostProperties() {
   const session = await auth();
@@ -71,9 +72,14 @@ export default async function HostProperties() {
                     Edit Property
                   </Button>
                 </Link>
-                <Button variant="destructive" className="border-2 border-foreground shadow-hard-sm rounded-xl font-bold bg-accent text-accent-foreground hover:bg-accent/90">
-                  Delete
-                </Button>
+                <form action={async () => {
+                  "use server";
+                  await deleteProperty(property.id);
+                }}>
+                  <Button type="submit" variant="destructive" className="border-2 border-foreground shadow-hard-sm rounded-xl font-bold bg-accent text-accent-foreground hover:bg-accent/90">
+                    Delete
+                  </Button>
+                </form>
               </div>
             </div>
           );

@@ -6,14 +6,16 @@ import type { PropertyData } from "@/lib/prisma-types";
 import { useRouter } from "next/navigation";
 import { saveBoutiqueSite } from "@/app/actions/property";
 
-export function PreviewClient({ initialData }: { initialData: PropertyData }) {
+export function PreviewClient({ initialData, propertyId }: { initialData: PropertyData, propertyId?: string }) {
   const [data, setData] = useState<PropertyData>(initialData);
   const [isPublishing, setIsPublishing] = useState(false);
   const router = useRouter();
+  
+  const draftKey = `prisma_draft_${propertyId || 'new'}`;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const draft = sessionStorage.getItem("prisma_draft");
+      const draft = sessionStorage.getItem(draftKey);
       if (draft) {
         try {
           setData(JSON.parse(draft));
@@ -22,12 +24,15 @@ export function PreviewClient({ initialData }: { initialData: PropertyData }) {
         }
       }
     }
-  }, []);
+  }, [draftKey]);
 
   const handlePublish = async (kit: any) => {
     setIsPublishing(true);
     try {
       await saveBoutiqueSite(data, kit, "demo-host-id");
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem(draftKey);
+      }
       // Intentionally not redirecting so they see the "You're live" modal
     } catch (err) {
       console.error(err);
@@ -42,10 +47,10 @@ export function PreviewClient({ initialData }: { initialData: PropertyData }) {
       setData={(newData) => {
         setData(newData);
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("prisma_draft", JSON.stringify(newData));
+          sessionStorage.setItem(draftKey, JSON.stringify(newData));
         }
       }} 
-      onBack={() => router.push("/host/builder")} 
+      onBack={() => router.push(`/host/builder${propertyId ? `?id=${propertyId}` : ''}`)} 
       onPublish={handlePublish} 
       isPublishing={isPublishing} 
       readOnly={false}

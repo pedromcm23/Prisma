@@ -1,14 +1,17 @@
-"use client";
-
-import Link from "next/link";
-import { useState } from "react";
-import { OnboardingWizard } from "@/components/prisma/OnboardingWizard";
+import { prisma } from "@/lib/prisma";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
-import { useRouter } from "next/navigation";
+import { BuilderClient } from "./builder-client";
+import { auth } from "@/auth";
 
-export default function BuilderPage() {
-  const router = useRouter();
-  const [data, setData] = useState<PropertyData>(() => {
+export default async function BuilderPage({
+  searchParams,
+}: {
+  searchParams: { id?: string };
+}) {
+  const session = await auth();
+  const hostId = session?.user?.id;
+  
+  let initialData: PropertyData = (() => {
     const d = emptyData();
     d.name = "";
     d.location = "";
@@ -26,20 +29,23 @@ export default function BuilderPage() {
       { name: "", price: 120, amenities: [], photos: [] }
     ];
     return d;
-  });
+  })();
+
+  let propertyId = undefined;
+
+  if (searchParams.id && hostId) {
+    const property = await prisma.property.findUnique({
+      where: { id: searchParams.id }
+    });
+    
+    // Ensure the host owns it
+    if (property && property.hostId === hostId && property.landingPageJson) {
+      propertyId = property.id;
+      initialData = property.landingPageJson as unknown as PropertyData;
+    }
+  }
 
   return (
-    <div>
-      <OnboardingWizard
-        data={data}
-        setData={setData}
-        onGenerate={() => {
-          if (typeof window !== "undefined") {
-            sessionStorage.setItem("prisma_draft", JSON.stringify(data));
-          }
-          router.push("/host/preview");
-        }}
-      />
-    </div>
+    <BuilderClient initialData={initialData} propertyId={propertyId} />
   );
 }

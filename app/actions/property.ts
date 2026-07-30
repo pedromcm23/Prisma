@@ -101,3 +101,27 @@ export async function saveBoutiqueSite(data: any, kit: any, fallbackHostId: stri
   });
   return property.id;
 }
+
+import { revalidatePath } from "next/cache";
+
+export async function deleteProperty(propertyId: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  // Verify ownership
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId }
+  });
+  
+  if (!property || property.hostId !== session.user.id) {
+    throw new Error("Unauthorized or not found");
+  }
+  
+  await prisma.property.delete({
+    where: { id: propertyId }
+  });
+  
+  revalidatePath("/host/properties");
+  revalidatePath("/host/preview");
+  return true;
+}
