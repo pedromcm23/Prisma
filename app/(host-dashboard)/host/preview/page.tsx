@@ -28,8 +28,14 @@ export default async function PreviewWebsite({
 
   let data: PropertyData;
 
-  if (property && property.landingPageJson) {
-    data = property.landingPageJson as unknown as PropertyData;
+  if (property && property.landingPageJson && Object.keys(property.landingPageJson).length > 0) {
+    const json = property.landingPageJson as any;
+    data = { ...emptyData(), ...json };
+    data.name = json.name || property.name || "Your Stay";
+    data.location = json.location || property.description || "";
+    if (!data.rooms || !data.rooms.length) {
+      data.rooms = [{ name: "Standard Room", price: 100, amenities: [], photos: [] }];
+    }
   } else {
     // Fallback to the exact Lovable mock data
     data = emptyData();

@@ -19,6 +19,35 @@ export default async function PublicPropertyPage({ params }: { params: { id: str
   }
 
   if (!property) {
+    const { SAMPLE_LISTINGS } = await import("@/lib/prisma-types");
+    const sample = SAMPLE_LISTINGS.find(s => s.slug === params.id);
+    if (sample) {
+      property = {
+        id: sample.slug,
+        name: sample.name,
+        description: sample.location,
+        hostId: "mock",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        landingPageHtml: null,
+        brandKitJson: null,
+        landingPageJson: {
+          name: sample.name,
+          location: sample.location,
+          tagline: sample.tagline,
+          hostName: sample.hostName,
+          rooms: [{
+            name: "Main Room",
+            price: sample.price,
+            photos: sample.image ? [sample.image] : [],
+            amenities: sample.tags || []
+          }]
+        } as any
+      };
+    }
+  }
+
+  if (!property) {
     notFound();
   }
 

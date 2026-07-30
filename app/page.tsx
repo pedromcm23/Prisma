@@ -90,7 +90,8 @@ export default async function Landing() {
               <div
                 className={`aspect-[5/4] rounded-sm border-2 border-foreground bg-gradient-to-br ${
                   ["from-primary to-mustard", "from-accent to-ocean", "from-mustard to-primary"][i]
-                } flex items-end p-3`}
+                } flex items-end p-3 bg-cover bg-center`}
+                style={p.image ? { backgroundImage: `url(${p.image})` } : undefined}
               >
                 <div className="bg-white/90 border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
                   <Star className="w-3 h-3 fill-mustard" /> {p.rating}

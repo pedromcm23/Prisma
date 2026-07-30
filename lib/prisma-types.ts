@@ -106,7 +106,7 @@ export const SAMPLE_LISTINGS: Listing[] = [
     hostName: "Ana",
     tags: ["Terrace", "Breakfast", "Cats"],
     color: "from-primary to-mustard",
-    image: "https://images.unsplash.com/photo-1542361345-89e58247f2d5?q=80&w=1200&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop",
     lat: 42,
     lng: 28,
   },
