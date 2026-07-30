@@ -19,36 +19,7 @@ export default async function HostBookings() {
     orderBy: { startDate: "desc" }
   });
 
-  if (bookings.length === 0) {
-    bookings = [
-      {
-        id: "mock-1",
-        customer: { name: "Mira Weiss", email: "mira@example.com" },
-        property: { name: "Garden Room" },
-        startDate: new Date("2026-06-12"),
-        endDate: new Date("2026-06-15"),
-        status: "CONFIRMED", // Displayed as COMPLETED via class styling matching cream
-        review: { text: "Woke up to bells and warm bread. Never wanted to leave.", rating: 5 }
-      },
-      {
-        id: "mock-2",
-        customer: { name: "Julián Ortiz", email: "j@example.com" },
-        property: { name: "Sea View Suite" },
-        startDate: new Date("2026-07-02"),
-        endDate: new Date("2026-07-06"),
-        status: "CONFIRMED",
-        review: { text: "The tiles, the light, the little cat. A whole vibe.", rating: 5 }
-      },
-      {
-        id: "mock-3",
-        customer: { name: "Sara Rossi", email: "sara@example.com" },
-        property: { name: "Garden Room" },
-        startDate: new Date("2026-08-20"),
-        endDate: new Date("2026-08-24"),
-        status: "PENDING",
-      }
-    ] as any;
-  }
+
 
   return (
     <div>

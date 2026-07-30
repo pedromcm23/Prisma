@@ -2,17 +2,29 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { PreviewClient } from "./preview-client";
 import { emptyData, PropertyData } from "@/lib/prisma-types";
+import { PropertySelector } from "./property-selector";
 
-export default async function PreviewWebsite() {
+export default async function PreviewWebsite({
+  searchParams,
+}: {
+  searchParams: { id?: string };
+}) {
   const session = await auth();
   const hostId = session?.user?.id;
 
   if (!hostId) return null;
 
-  const property = await prisma.property.findFirst({
+  const properties = await prisma.property.findMany({
     where: { hostId },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    select: { id: true, name: true, landingPageJson: true }
   });
+
+  let property = properties[0];
+  if (searchParams.id) {
+    const found = properties.find(p => p.id === searchParams.id);
+    if (found) property = found;
+  }
 
   let data: PropertyData;
 
@@ -49,9 +61,10 @@ export default async function PreviewWebsite() {
         <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
         <span className="w-3 h-3 rounded-full bg-green-500"></span>
         <span className="ml-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Live Preview</span>
+        <PropertySelector properties={properties} activeId={property?.id} basePath="/host/preview" />
       </div>
       <div className="bg-white">
-        <PreviewClient initialData={data} />
+        <PreviewClient key={property?.id || "fallback"} initialData={data} />
       </div>
     </div>
   );

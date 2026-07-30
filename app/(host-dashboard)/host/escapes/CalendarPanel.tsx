@@ -6,7 +6,9 @@ import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-export function CalendarPanel() {
+import { PropertySelector } from "../preview/property-selector";
+
+export function CalendarPanel({ properties = [], activeId }: { properties?: { id: string, name: string }[], activeId?: string }) {
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [spontaneousDates, setSpontaneousDates] = useState<string[]>([]);
   const [cursor, setCursor] = useState(() => new Date());
@@ -43,12 +45,17 @@ export function CalendarPanel() {
 
   return (
     <div>
-      <div className="mb-6">
-        <p className="font-hand text-2xl text-accent">availability</p>
-        <h2 className="text-3xl font-display font-extrabold">Calendar & Spontaneous Escapes</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Click a date to block it. Then toggle "list on Spontaneous Escapes" to push last-minute openings to the guest feed.
-        </p>
+      <div className="mb-6 flex flex-wrap gap-4 items-end justify-between">
+        <div>
+          <p className="font-hand text-2xl text-accent">availability</p>
+          <h2 className="text-3xl font-display font-extrabold">Calendar & Spontaneous Escapes</h2>
+          <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+            Click a date to block it. Then toggle "list on Spontaneous Escapes" to push last-minute openings to the guest feed.
+          </p>
+        </div>
+        {properties.length > 0 && (
+          <PropertySelector properties={properties} activeId={activeId} basePath="/host/escapes" />
+        )}
       </div>
 
       <div className="hand-border bg-white p-4">

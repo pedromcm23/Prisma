@@ -33,7 +33,6 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
   const [tab, setTab] = useState<"discover" | "spontaneous" | "share">("discover");
   const [view, setView] = useState<"grid" | "map">("grid");
   const [query, setQuery] = useState("");
-  const [openListing, setOpenListing] = useState<Listing | null>(null);
 
   const filtered = initialListings.filter((l) => {
     if (!query.trim()) return true;
@@ -44,6 +43,10 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
       l.tags.some((t) => t.toLowerCase().includes(q))
     );
   });
+
+  const handleOpenMapMarker = (l: Listing) => {
+    window.open(`/stay/${l.slug}`, "_blank");
+  };
 
   return (
     <div className="min-h-screen">
@@ -133,9 +136,9 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
           </div>
 
           {view === "grid" ? (
-            <GridView listings={filtered} onOpen={setOpenListing} />
+            <GridView listings={filtered} />
           ) : (
-            <DynamicMap listings={filtered} onOpen={setOpenListing} />
+            <DynamicMap listings={filtered} onOpen={handleOpenMapMarker} />
           )}
         </>
       )}
@@ -160,12 +163,6 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
         </div>
       )}
 
-      <Sheet open={!!openListing} onOpenChange={(o) => !o && setOpenListing(null)}>
-        <SheetContent side="right" className="bg-cream border-l-2 border-foreground w-full sm:max-w-md overflow-y-auto">
-          {openListing && <ListingDrawer listing={openListing} onClose={() => setOpenListing(null)} />}
-        </SheetContent>
-      </Sheet>
-
       <footer className="border-t-2 border-foreground bg-primary text-primary-foreground mt-12">
         <div className="mx-auto max-w-6xl px-4 py-8 flex flex-wrap items-center justify-between gap-3">
           <p className="font-display text-xl font-extrabold">Prisma</p>
@@ -176,16 +173,17 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
   );
 }
 
-function GridView({ listings, onOpen }: { listings: Listing[]; onOpen: (l: Listing) => void }) {
+function GridView({ listings }: { listings: Listing[] }) {
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16">
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-auto">
         {listings.map((l, i) => (
-          <button
+          <Link
             key={l.slug}
-            onClick={() => onOpen(l)}
+            href={`/stay/${l.slug}`}
+            target="_blank"
             className={cn(
-              "polaroid text-left group transition-transform hover:-translate-y-1",
+              "polaroid text-left group transition-transform hover:-translate-y-1 block",
               ["rotate-[-2deg]", "rotate-[1.5deg]", "rotate-[-1deg]", "rotate-[2deg]", "rotate-[-1.5deg]", "rotate-[1deg]"][i % 6],
               i % 5 === 0 && "lg:col-span-2",
             )}
@@ -240,7 +238,7 @@ function GridView({ listings, onOpen }: { listings: Listing[]; onOpen: (l: Listi
                 </span>
               </div>
             </div>
-          </button>
+          </Link>
         ))}
       </div>
     </section>
