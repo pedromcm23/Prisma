@@ -19,9 +19,10 @@ export async function getProperties(options?: { take?: number }) {
     return properties.map(p => {
       const json = p.landingPageJson as any;
       const image = json?.rooms?.[0]?.photos?.[0] || null;
+      const slug = (p.name || "your-stay").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
       return {
-        slug: p.id, // using id as slug for now
+        slug: slug, // using name-based slug for pretty URLs
         name: p.name,
         location: p.description || "Unknown Location",
         neighborhood: "City Center", // Placeholder since schema lacks neighborhood
@@ -60,9 +61,14 @@ export async function createProperty(name: string, description: string) {
 }
 
 export async function savePropertyDesign(propertyId: string, designJson: any, html: string) {
+  const name = designJson?.name || "Your Stay";
+  const description = designJson?.location || "";
+
   await prisma.property.update({
     where: { id: propertyId },
     data: {
+      name,
+      description,
       landingPageJson: designJson,
       landingPageHtml: html,
     }

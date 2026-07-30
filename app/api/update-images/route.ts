@@ -9,9 +9,20 @@ export async function GET() {
     let updatedRiad = false;
 
     for (const property of properties) {
+      const json = property.landingPageJson as any;
+      if (json && json.name) {
+        // Sync name and description
+        await prisma.property.update({
+          where: { id: property.id },
+          data: {
+            name: json.name,
+            description: json.location || property.description
+          }
+        });
+      }
+
       if (property.name === "Casa Amarela") {
-        let json = property.landingPageJson as any;
-        if (!json) json = {};
+        if (!json) continue;
         if (!json.rooms) json.rooms = [{}];
         if (!json.rooms[0].photos) json.rooms[0].photos = [];
         
@@ -23,8 +34,7 @@ export async function GET() {
         });
         updatedCasa = true;
       } else if (property.name === "Riad Nour") {
-        let json = property.landingPageJson as any;
-        if (!json) json = {};
+        if (!json) continue;
         if (!json.rooms) json.rooms = [{}];
         if (!json.rooms[0].photos) json.rooms[0].photos = [];
         
