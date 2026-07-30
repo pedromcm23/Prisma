@@ -22,15 +22,11 @@ export function AppHeader({ user, role }: { user?: any, role?: string }) {
         <div className="flex-1" />
 
         {status === "unauth" && (
-          <nav className="flex items-center gap-2 sm:gap-4">
-            <Link href="/search" className="text-sm font-bold hover:text-primary">Explore Stays</Link>
-            <Link href="/host/builder" className="text-sm font-bold hover:text-primary">For Hosts</Link>
-            <Link href="/api/auth/signin">
-              <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-xl h-10 px-4 font-bold hover:bg-primary/90">
-                Sign In / Register
-              </Button>
-            </Link>
-          </nav>
+          <Link href="/api/auth/signin">
+            <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-xl h-10 px-4 font-bold hover:bg-primary/90">
+              Sign In / Register
+            </Button>
+          </Link>
         )}
 
         {status === "guest" && (

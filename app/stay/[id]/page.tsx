@@ -66,7 +66,7 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
   data.name = property.name || data.name || "Your Stay";
   data.hostName = property.host?.name || data.hostName || "Unknown Host";
   data.location = property.description || data.location || "";
-  data.specials = data.specials || emptyData().specials;
+  data.specials = data.specials || ["Amazing location", "Great views", "Local vibe"];
   data.directions = data.directions || emptyData().directions;
   data.reviews = data.reviews || emptyData().reviews;
   data.rooms = data.rooms || emptyData().rooms;
