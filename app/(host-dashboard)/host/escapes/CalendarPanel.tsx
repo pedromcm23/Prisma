@@ -121,7 +121,8 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                   blocked ? 
                     (isPastDate ? "bg-primary/50 text-primary-foreground border-foreground/30" : "bg-primary text-primary-foreground border-foreground") : 
                     "bg-cream border-foreground",
-                  isToday && "ring-4 ring-accent border-accent bg-accent/10 text-accent",
+                  isToday && !blocked && "ring-4 ring-accent border-accent bg-accent/10 text-accent",
+                  isToday && blocked && "ring-4 ring-accent border-accent",
                 )}
               >
                 {format(d, "d")}

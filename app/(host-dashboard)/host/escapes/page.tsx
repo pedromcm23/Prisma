@@ -37,13 +37,6 @@ export default async function FlashDeals(props: {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between bg-white p-4 hand-border">
-        <div>
-          <p className="font-hand text-xl text-accent">Availability</p>
-          <h2 className="text-2xl font-display font-extrabold">Calendar</h2>
-        </div>
-        <PropertySelector properties={properties} activeId={activeId} basePath="/host/escapes" />
-      </div>
       <CalendarPanel 
         key={activeId || 'none'} 
         properties={properties} 
