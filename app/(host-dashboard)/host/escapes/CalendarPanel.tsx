@@ -117,7 +117,7 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                 onClick={() => { toggleBlocked(key); setFocused(key); }}
                 className={cn(
                   "relative aspect-square rounded-lg border-2 text-sm font-bold flex flex-col items-center justify-center transition-transform",
-                  isPastDate ? "cursor-not-allowed opacity-60" : "hover:bg-foreground/5",
+                  isPastDate ? "cursor-not-allowed opacity-60" : "",
                   blocked ? 
                     (isPastDate ? "bg-primary/50 text-primary-foreground border-foreground/30" : "bg-primary text-primary-foreground border-foreground") : 
                     "bg-cream border-foreground",
