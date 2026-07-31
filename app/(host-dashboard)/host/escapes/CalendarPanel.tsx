@@ -78,10 +78,10 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap gap-4 items-end justify-between">
+      <div className="mb-6 bg-white p-4 hand-border flex flex-wrap gap-4 items-end justify-between">
         <div>
           <p className="font-hand text-2xl text-accent">availability</p>
-          <h2 className="text-3xl font-display font-extrabold">Calendar & Spontaneous Escapes</h2>
+          <h2 className="text-3xl font-display font-extrabold">Calendar & Flash Deals</h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
             Click a date to block it. Then toggle "list on Spontaneous Escapes" to push last-minute openings to the guest feed.
           </p>
@@ -121,8 +121,8 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                   blocked ? 
                     (isPastDate ? "bg-primary/50 text-primary-foreground border-foreground/30" : "bg-primary text-primary-foreground border-foreground") : 
                     "bg-cream border-foreground",
-                  isToday && !blocked && "ring-4 ring-accent border-accent bg-accent/10 text-accent",
-                  isToday && blocked && "ring-4 ring-accent border-accent",
+                  isToday && !blocked && "ring-2 ring-accent ring-offset-2 ring-offset-cream border-accent bg-accent/10 text-accent",
+                  isToday && blocked && "ring-2 ring-accent ring-offset-2 ring-offset-cream",
                 )}
               >
                 {format(d, "d")}
