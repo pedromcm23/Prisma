@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CalendarPanel } from "./CalendarPanel";
 import { PropertySelector } from "../preview/property-selector";
+import { eachDayOfInterval, subDays } from "date-fns";
 
 export default async function FlashDeals(props: {
   searchParams: Promise<{ id?: string }>;
@@ -25,6 +26,7 @@ export default async function FlashDeals(props: {
 
   let initialBlocked: string[] = [];
   let initialSpontaneous: string[] = [];
+  let bookedDates: string[] = [];
   
   if (activeId) {
     const blocked = await prisma.blockedDate.findMany({
@@ -33,6 +35,16 @@ export default async function FlashDeals(props: {
     
     initialBlocked = blocked.filter(b => b.isBlocked).map(b => b.date.toISOString().split('T')[0]);
     initialSpontaneous = blocked.filter(b => b.isSpontaneous).map(b => b.date.toISOString().split('T')[0]);
+
+    const bookings = await prisma.booking.findMany({
+      where: { propertyId: activeId, status: "CONFIRMED" }
+    });
+
+    bookings.forEach(b => {
+      if (b.startDate >= b.endDate) return;
+      const days = eachDayOfInterval({ start: b.startDate, end: subDays(b.endDate, 1) });
+      days.forEach(d => bookedDates.push(d.toISOString().split('T')[0]));
+    });
   }
 
   return (
@@ -43,6 +55,7 @@ export default async function FlashDeals(props: {
         activeId={activeId} 
         initialBlocked={initialBlocked}
         initialSpontaneous={initialSpontaneous}
+        bookedDates={bookedDates}
       />
     </div>
   );

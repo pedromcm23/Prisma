@@ -9,7 +9,7 @@ import { toggleBlockedDate, toggleSpontaneousDate } from "@/app/actions/availabi
 
 import { PropertySelector } from "../preview/property-selector";
 
-export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[] }) {
+export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [], bookedDates = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[], bookedDates?: string[] }) {
   const [blockedDates, setBlockedDates] = useState<string[]>(initialBlocked);
   const [spontaneousDates, setSpontaneousDates] = useState<string[]>(initialSpontaneous);
   const [cursor, setCursor] = useState(() => new Date());
@@ -108,16 +108,18 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
             const key = iso(d);
             const blocked = blockedDates.includes(key);
             const spont = spontaneousDates.includes(key);
+            const isBooked = bookedDates.includes(key);
             const isPastDate = isBefore(d, startOfDay(new Date()));
             const isToday = isSameDay(d, new Date());
             return (
               <button
                 key={key}
-                disabled={isPastDate}
+                disabled={isPastDate || isBooked}
                 onClick={() => { toggleBlocked(key); setFocused(key); }}
                 className={cn(
                   "relative aspect-square rounded-lg border-2 text-sm font-bold flex flex-col items-center justify-center transition-transform",
-                  isPastDate ? "cursor-not-allowed opacity-60" : "",
+                  (isPastDate || isBooked) ? (isPastDate && !isBooked ? "cursor-not-allowed opacity-60" : "cursor-not-allowed") : "hover:bg-foreground/5",
+                  isBooked ? "bg-foreground text-cream border-foreground" :
                   blocked ? 
                     (isPastDate ? "bg-primary/50 text-primary-foreground border-foreground/30" : "bg-primary text-primary-foreground border-foreground") : 
                     "bg-cream border-foreground",
@@ -156,6 +158,7 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
         <div className="mt-4 flex flex-wrap gap-4 text-xs">
           <Legend swatch="bg-cream border-2 border-foreground" label="Open" />
           <Legend swatch="bg-primary border-2 border-foreground" label="Blocked" />
+          <Legend swatch="bg-foreground border-2 border-foreground" label="Booked by Guest" />
           <Legend swatch="bg-cream border-2 border-foreground" icon={<Zap className="w-3 h-3 fill-mustard text-mustard" />} label="Listed as Spontaneous Escape" />
         </div>
       </div>
