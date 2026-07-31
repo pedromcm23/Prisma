@@ -4,7 +4,7 @@ import type { PropertyData } from "@/lib/prisma-types";
 import { Calendar } from "@/components/ui/calendar";
 import { createBooking } from "@/app/actions/booking";
 import type { DateRange } from "react-day-picker";
-import { differenceInDays, parseISO, format } from "date-fns";
+import { differenceInDays, parseISO, format, addYears } from "date-fns";
 
 export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data: PropertyData, propertyId: string, unavailableDates?: string[] }) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -14,7 +14,7 @@ export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data
   const [error, setError] = useState<string | null>(null);
 
   const disabledDays = [
-    { before: new Date() },
+    { before: new Date(), after: addYears(new Date(), 2) },
     ...unavailableDates.map(d => parseISO(d))
   ];
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addMonths, subMonths, isBefore, startOfDay } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addMonths, subMonths, isBefore, startOfDay, addYears, isAfter } from "date-fns";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -110,15 +110,17 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
             const spont = spontaneousDates.includes(key);
             const isBooked = bookedDates.includes(key);
             const isPastDate = isBefore(d, startOfDay(new Date()));
+            const isTooFar = isAfter(d, addYears(new Date(), 2));
+            const isDisabled = isPastDate || isTooFar;
             const isToday = isSameDay(d, new Date());
             return (
               <button
                 key={key}
-                disabled={isPastDate || isBooked}
+                disabled={isDisabled || isBooked}
                 onClick={() => { toggleBlocked(key); setFocused(key); }}
                 className={cn(
                   "relative aspect-square rounded-lg border-2 text-sm font-bold flex flex-col items-center justify-center transition-transform",
-                  (isPastDate || isBooked) ? (isPastDate && !isBooked ? "cursor-not-allowed opacity-60" : "cursor-not-allowed") : "",
+                  (isDisabled || isBooked) ? (isDisabled && !isBooked ? "cursor-not-allowed opacity-60" : "cursor-not-allowed") : "",
                   isBooked ? "bg-foreground text-cream border-foreground" :
                   blocked ? 
                     (isPastDate ? "bg-primary/50 text-primary-foreground border-foreground/30" : "bg-primary text-primary-foreground border-foreground") : 
