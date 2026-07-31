@@ -3,8 +3,15 @@ import { notFound } from "next/navigation";
 import { HotelWebsite } from "@/components/prisma/HotelWebsite";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
 
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+
 export default async function PublicPropertyPage(props: { params: Promise<{ id: string }> }) {
+  const session = await auth();
   const params = await props.params;
+  if (!session) {
+    redirect(`/login?callbackUrl=/stay/${params.id}`);
+  }
   let property = null;
   try {
     property = await prisma.property.findUnique({

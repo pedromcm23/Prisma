@@ -6,7 +6,10 @@ import { GuestPortal } from "@/components/prisma/GuestPortal";
 import { getProperties } from "@/app/actions/property";
 import { SAMPLE_LISTINGS } from "@/lib/prisma-types";
 
-export default async function LoginPage() {
+export default async function LoginPage(props: { searchParams: Promise<{ callbackUrl?: string }> }) {
+  const searchParams = await props.searchParams;
+  const callbackUrl = searchParams.callbackUrl || "/";
+
   let dbListings = SAMPLE_LISTINGS;
   try {
     const props = await getProperties({ take: 4 });
@@ -43,7 +46,7 @@ export default async function LoginPage() {
           <form
             action={async () => {
               "use server";
-              await signIn("google", { redirectTo: "/" });
+              await signIn("google", { redirectTo: callbackUrl });
             }}
             className="w-full"
           >
