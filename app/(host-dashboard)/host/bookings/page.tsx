@@ -19,37 +19,7 @@ export default async function HostBookings() {
     orderBy: { startDate: "desc" }
   });
 
-  if (bookings.length === 0) {
-    bookings = [
-      {
-        id: "mock-1",
-        propertyId: "mock-prop",
-        customerId: "mock-cust",
-        startDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-        endDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-        totalPrice: 420,
-        status: "CONFIRMED",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        property: { name: "Casa Amarela" },
-        customer: { name: "Sofia Silva", email: "sofia@example.com", image: null },
-        review: { rating: 5, text: "O alojamento estava perfeito! A luz de manhã é incrível." }
-      },
-      {
-        id: "mock-2",
-        propertyId: "mock-prop",
-        customerId: "mock-cust-2",
-        startDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // in 5 days
-        endDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000), // in 8 days
-        totalPrice: 380,
-        status: "PENDING",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        property: { name: "Riad Nour" },
-        customer: { name: "Thomas Mueller", email: "thomas@example.com", image: null },
-      }
-    ] as any;
-  }
+  // Removed mock data as requested
 
   return (
     <div>

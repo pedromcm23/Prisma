@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { AppHeader } from "@/components/app-header";
 import { GuestPortal } from "@/components/prisma/GuestPortal";
 import { redirect } from "next/navigation";
-import { getProperties } from "@/app/actions/property";
+import { getProperties, getSpontaneousProperties } from "@/app/actions/property";
 import { SAMPLE_LISTINGS } from "@/lib/prisma-types";
 
 export default async function Landing() {
@@ -23,11 +23,13 @@ export default async function Landing() {
   }
 
   let dbListings = SAMPLE_LISTINGS;
+  let flashDeals: any[] = [];
   try {
     const props = await getProperties();
     if (props && props.length > 0) {
       dbListings = props;
     }
+    flashDeals = await getSpontaneousProperties();
   } catch (e) {
     console.error(e);
   }
@@ -35,7 +37,7 @@ export default async function Landing() {
   return (
     <div className="min-h-screen bg-cream text-foreground">
       <AppHeader user={session?.user} role={role} />
-      <GuestPortal listings={dbListings} isAuthenticated={!!session} />
+      <GuestPortal listings={dbListings} flashDeals={flashDeals} isAuthenticated={!!session} />
 
       <footer className="border-t-2 border-foreground bg-primary text-primary-foreground mt-12">
         <div className="mx-auto max-w-6xl px-4 py-8 flex flex-wrap items-center justify-between gap-3">

@@ -12,8 +12,8 @@ export function SidebarNav() {
     { id: "/host/builder", label: "Create Your Website", icon: Hammer },
     { id: "/host/preview", label: "Preview Website", icon: Eye },
     { id: "/host/bookings", label: "Booking History", icon: BookOpen },
-    { id: "/host/escapes", label: "Calendar & Availability", icon: CalendarDays },
-    { id: "/host/properties", label: "Properties", icon: Home },
+    { id: "/host/escapes", label: "Calendar & Flash Deals", icon: CalendarDays },
+    { id: "/host/properties", label: "Property Management", icon: Home },
     { id: "/host/perks", label: "Guest Perks", icon: Heart },
   ];
 

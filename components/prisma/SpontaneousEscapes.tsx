@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Clock, Sparkles, ArrowRight, Star, MapPin } from "lucide-react";
-import { getSpontaneousStays, type Listing } from "@/lib/prisma-types";
+import { type SpontaneousStay } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
 
-export function SpontaneousEscapes({ listings, isAuthenticated, onAuthRequired }: { listings?: Listing[], isAuthenticated?: boolean, onAuthRequired?: () => void }) {
-  const stays = getSpontaneousStays(listings);
+export function SpontaneousEscapes({ stays = [], isAuthenticated, onAuthRequired }: { stays?: any[], isAuthenticated?: boolean, onAuthRequired?: () => void }) {
 
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16">

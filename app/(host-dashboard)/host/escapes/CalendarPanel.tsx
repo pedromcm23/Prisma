@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addMonths, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addMonths, subMonths, isBefore, startOfDay } from "date-fns";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -108,14 +108,20 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
             const key = iso(d);
             const blocked = blockedDates.includes(key);
             const spont = spontaneousDates.includes(key);
+            const isPastDate = isBefore(d, startOfDay(new Date()));
+            const isToday = isSameDay(d, new Date());
             return (
               <button
                 key={key}
+                disabled={isPastDate}
                 onClick={() => { toggleBlocked(key); setFocused(key); }}
                 className={cn(
-                  "relative aspect-square rounded-lg border-2 border-foreground text-sm font-bold flex flex-col items-center justify-center transition-transform",
-                  blocked ? "bg-primary text-primary-foreground" : "bg-cream hover:bg-mustard/30",
-                  isSameDay(d, new Date()) && "ring-2 ring-accent",
+                  "relative aspect-square rounded-lg border-2 text-sm font-bold flex flex-col items-center justify-center transition-transform",
+                  isPastDate ? "cursor-not-allowed opacity-60" : "hover:bg-mustard/30",
+                  blocked ? 
+                    (isPastDate ? "bg-primary/50 text-primary-foreground border-foreground/30" : "bg-primary text-primary-foreground border-foreground") : 
+                    "bg-cream border-foreground",
+                  isToday && "ring-4 ring-accent border-accent bg-accent/10 text-accent",
                 )}
               >
                 {format(d, "d")}

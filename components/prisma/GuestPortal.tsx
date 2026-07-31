@@ -13,10 +13,11 @@ type Tab = "discover" | "flash";
 
 type Props = {
   listings?: Listing[];
+  flashDeals?: any[];
   isAuthenticated?: boolean;
 };
 
-export function GuestPortal({ listings = SAMPLE_LISTINGS, isAuthenticated = false }: Props) {
+export function GuestPortal({ listings = SAMPLE_LISTINGS, flashDeals = [], isAuthenticated = false }: Props) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [tab, setTab] = useState<Tab>("discover");
   const [view, setView] = useState<"grid" | "map">("grid");
@@ -93,7 +94,7 @@ export function GuestPortal({ listings = SAMPLE_LISTINGS, isAuthenticated = fals
 
       {tab === "flash" && (
         <div className="py-8">
-          <SpontaneousEscapes listings={listings} isAuthenticated={isAuthenticated} onAuthRequired={() => setShowLoginModal(true)} />
+          <SpontaneousEscapes stays={flashDeals} isAuthenticated={isAuthenticated} onAuthRequired={() => setShowLoginModal(true)} />
         </div>
       )}
 

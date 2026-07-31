@@ -43,6 +43,79 @@ export async function getProperties(options?: { take?: number }) {
   }
 }
 
+export async function getSpontaneousProperties() {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dayAfter = new Date(today);
+    dayAfter.setDate(dayAfter.getDate() + 2);
+
+    const spontaneousDates = await prisma.blockedDate.findMany({
+      where: {
+        isSpontaneous: true,
+        date: {
+          gte: today,
+          lt: dayAfter
+        }
+      },
+      include: {
+        property: {
+          include: {
+            host: { select: { name: true } }
+          }
+        }
+      }
+    });
+
+    // Deduplicate properties
+    const uniqueProps = new Map();
+    spontaneousDates.forEach(sd => {
+      if (!uniqueProps.has(sd.property.id)) {
+        uniqueProps.set(sd.property.id, { property: sd.property, firstDate: sd.date });
+      }
+    });
+
+    const results = Array.from(uniqueProps.values()).map(({ property: p, firstDate }) => {
+      const json = p.landingPageJson as any;
+      const image = json?.rooms?.[0]?.photos?.[0] || null;
+      const slug = p.id;
+      const price = json?.rooms?.[0]?.price || json?.basePrice || 150;
+      const discount = 0.2;
+      const dealPrice = Math.round(price * (1 - discount));
+      const isToday = firstDate.getTime() === today.getTime();
+      const hoursLeft = isToday ? 24 - new Date().getHours() : 48 - new Date().getHours();
+
+      return {
+        slug: slug,
+        name: p.name,
+        location: p.description || "Unknown Location",
+        neighborhood: "City Center",
+        tagline: p.description?.substring(0, 50) || "A beautiful stay",
+        price: price,
+        originalPrice: price,
+        dealPrice: dealPrice,
+        rating: 5.0,
+        hostName: p.host.name || "Unknown Host",
+        tags: ["Cozy", "WiFi"],
+        color: "from-primary to-mustard",
+        image,
+        lat: 50,
+        lng: 50,
+        hoursLeft,
+        perks: ["Free late checkout (2pm)", "Welcome drinks on the terrace"],
+        window: isToday ? "Tonight" : "Tomorrow",
+      };
+    });
+
+    return results;
+  } catch (error) {
+    console.error("Error fetching spontaneous properties:", error);
+    return [];
+  }
+}
+
 export async function createProperty(name: string, description: string) {
   // In a real app we'd get hostId from session
   // For now we assume a dummy or find first user
