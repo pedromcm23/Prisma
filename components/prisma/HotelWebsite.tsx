@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
 import type { PropertyData } from "@/lib/prisma-types";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 export function HotelWebsite({ data }: { data: PropertyData }) {
   const [nights, setNights] = useState(3);
@@ -37,16 +35,6 @@ export function HotelWebsite({ data }: { data: PropertyData }) {
         fontFamily: "'Montserrat', 'Helvetica Neue', Arial, sans-serif",
       }}
     >
-      <div className="absolute top-4 left-4 z-50">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-white/90 backdrop-blur text-[11px] uppercase tracking-[0.2em] shadow-lg hover:bg-white transition-colors"
-          style={{ color: "#141414", border: "1px solid var(--hw-line)" }}
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Prisma
-        </Link>
-      </div>
-
       {/* Nav */}
       <nav
         className="flex items-center justify-center sm:justify-between px-6 sm:px-10 h-16 pt-16 sm:pt-0"
