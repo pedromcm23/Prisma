@@ -33,7 +33,7 @@ export default async function HostBookings() {
           <table className="w-full text-sm">
             <thead className="bg-mustard/40 border-b-2 border-foreground">
               <tr className="text-left">
-                {["Guest", "Room", "Dates", "Status", "Review"].map((h) => (
+                {["Guest", "Property", "Dates", "Status", "Review"].map((h) => (
                   <th key={h} className="px-4 py-3 text-xs uppercase tracking-wider font-bold">{h}</th>
                 ))}
               </tr>
