@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { BoutiqueSite } from "@/components/prisma/BoutiqueSite";
-import { themeToBrandKit } from "@/lib/brand-kit";
+import { HotelWebsite } from "@/components/prisma/HotelWebsite";
 import { emptyData, type PropertyData } from "@/lib/prisma-types";
 
 export default async function PublicPropertyPage(props: { params: Promise<{ id: string }> }) {
@@ -83,24 +82,7 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
     data.rooms = [{ name: "Standard Room", price: 100, amenities: [], photos: [] }];
   }
 
-  // Parse Brand Kit or use default theme
-  let brandKit = themeToBrandKit("folk-pop");
-  if (property.brandKitJson) {
-    try {
-      const dbKit = property.brandKitJson as any;
-      if (dbKit && dbKit.themeId) {
-        // Merge dbKit on top of the defaults for that theme
-        // This ensures any newly added fields (like foreground/cream) are populated for old DB records
-        brandKit = { ...themeToBrandKit(dbKit.themeId), ...dbKit };
-      }
-    } catch {}
-  }
-
   return (
-    <BoutiqueSite 
-      data={data} 
-      readOnly={true} 
-      initialBrandKit={brandKit}
-    />
+    <HotelWebsite data={data} />
   );
 }
