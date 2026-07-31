@@ -4,7 +4,7 @@ import type { PropertyData } from "@/lib/prisma-types";
 import { Calendar } from "@/components/ui/calendar";
 import { createBooking } from "@/app/actions/booking";
 import type { DateRange } from "react-day-picker";
-import { differenceInDays, parseISO } from "date-fns";
+import { differenceInDays, parseISO, format } from "date-fns";
 
 export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data: PropertyData, propertyId: string, unavailableDates?: string[] }) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -219,7 +219,12 @@ export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data
                   setError(null);
                   setIsBooking(true);
                   try {
-                    await createBooking(propertyId, dateRange.from.toISOString(), dateRange.to.toISOString(), total);
+                    await createBooking(
+                      propertyId, 
+                      format(dateRange.from, "yyyy-MM-dd"), 
+                      format(dateRange.to, "yyyy-MM-dd"), 
+                      total
+                    );
                     setBookingSuccess(true);
                   } catch (e: any) {
                     setError(e.message || "Failed to create reservation");
