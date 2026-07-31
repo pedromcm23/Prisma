@@ -1,15 +1,29 @@
 "use client";
 import { useState } from "react";
 import type { PropertyData } from "@/lib/prisma-types";
+import { Calendar } from "@/components/ui/calendar";
+import { createBooking } from "@/app/actions/booking";
+import type { DateRange } from "react-day-picker";
+import { differenceInDays, parseISO } from "date-fns";
 
-export function HotelWebsite({ data }: { data: PropertyData }) {
-  const [nights, setNights] = useState(3);
+export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data: PropertyData, propertyId: string, unavailableDates?: string[] }) {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [room, setRoom] = useState(0);
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const disabledDays = [
+    { before: new Date() },
+    ...unavailableDates.map(d => parseISO(d))
+  ];
 
   const rooms = data.rooms && data.rooms.length > 0 ? data.rooms : [
     { name: "Signature Room", price: data.basePrice || 150, amenities: ["WiFi", "AC"], photos: [] }
   ];
   const selectedRoomPrice = rooms[room]?.price || data.basePrice || 150;
+  
+  const nights = dateRange?.from && dateRange?.to ? Math.max(1, differenceInDays(dateRange.to, dateRange.from)) : 0;
   const total = selectedRoomPrice * nights;
   
   const allPhotos = data.rooms?.flatMap((r) => r.photos).filter(Boolean) || [];
@@ -170,24 +184,56 @@ export function HotelWebsite({ data }: { data: PropertyData }) {
               <span className="text-sm">{rooms[room]?.name}</span>
               <span className="text-sm">€{selectedRoomPrice} / night</span>
             </div>
-            <div className="flex items-center justify-between py-6">
-              <span className="text-[11px] uppercase tracking-[0.24em]" style={{ color: "var(--hw-muted)" }}>Nights</span>
-              <div className="flex items-center gap-5">
-                <button onClick={() => setNights((n) => Math.max(1, n - 1))} className="w-9 h-9 text-lg flex items-center justify-center transition-colors hover:bg-black/5" style={{ border: "1px solid var(--hw-line)" }}>−</button>
-                <span className="text-lg w-6 text-center">{nights}</span>
-                <button onClick={() => setNights((n) => Math.min(30, n + 1))} className="w-9 h-9 text-lg flex items-center justify-center transition-colors hover:bg-black/5" style={{ border: "1px solid var(--hw-line)" }}>+</button>
-              </div>
+            <div className="py-6 border-b" style={{ borderColor: "var(--hw-line)" }}>
+              <span className="text-[11px] uppercase tracking-[0.24em] mb-4 block" style={{ color: "var(--hw-muted)" }}>Select Dates</span>
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={setDateRange}
+                disabled={disabledDays}
+                numberOfMonths={1}
+                className="p-0 flex justify-center"
+              />
             </div>
-            <div className="flex items-baseline justify-between" style={{ borderTop: "1px solid var(--hw-line)", paddingTop: 16 }}>
-              <span className="text-[11px] uppercase tracking-[0.24em]" style={{ color: "var(--hw-muted)" }}>Total</span>
+            
+            <div className="flex items-baseline justify-between" style={{ paddingTop: 16 }}>
+              <span className="text-[11px] uppercase tracking-[0.24em]" style={{ color: "var(--hw-muted)" }}>Total ({nights} nights)</span>
               <span className="text-3xl" style={{ fontFamily: "'Bodoni Moda', Georgia, serif" }}>€{total}</span>
             </div>
-            <button
-              className="mt-6 w-full h-14 text-[11px] uppercase tracking-[0.3em] transition-opacity hover:opacity-90"
-              style={{ background: "var(--hw-ink)", color: "var(--hw-linen)" }}
-            >
-              Request this reservation
-            </button>
+
+            {error && (
+              <p className="mt-4 text-sm text-red-600 font-medium">{error}</p>
+            )}
+
+            {bookingSuccess ? (
+              <div className="mt-6 w-full h-14 flex items-center justify-center text-[11px] uppercase tracking-[0.3em] bg-green-600 text-white">
+                Reservation Confirmed
+              </div>
+            ) : (
+              <button
+                onClick={async () => {
+                  if (!dateRange?.from || !dateRange?.to) {
+                    setError("Please select check-in and check-out dates");
+                    return;
+                  }
+                  setError(null);
+                  setIsBooking(true);
+                  try {
+                    await createBooking(propertyId, dateRange.from.toISOString(), dateRange.to.toISOString(), total);
+                    setBookingSuccess(true);
+                  } catch (e: any) {
+                    setError(e.message || "Failed to create reservation");
+                  } finally {
+                    setIsBooking(false);
+                  }
+                }}
+                disabled={!dateRange?.from || !dateRange?.to || isBooking}
+                className="mt-6 w-full h-14 text-[11px] uppercase tracking-[0.3em] transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{ background: "var(--hw-ink)", color: "var(--hw-linen)" }}
+              >
+                {isBooking ? "Confirming..." : "Request this reservation"}
+              </button>
+            )}
           </div>
         </div>
       </section>

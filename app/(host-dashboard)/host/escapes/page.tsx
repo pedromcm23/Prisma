@@ -23,6 +23,18 @@ export default async function FlashDeals(props: {
     activeId = searchParams.id;
   }
 
+  let initialBlocked: string[] = [];
+  let initialSpontaneous: string[] = [];
+  
+  if (activeId) {
+    const blocked = await prisma.blockedDate.findMany({
+      where: { propertyId: activeId }
+    });
+    
+    initialBlocked = blocked.filter(b => b.isBlocked).map(b => b.date.toISOString().split('T')[0]);
+    initialSpontaneous = blocked.filter(b => b.isSpontaneous).map(b => b.date.toISOString().split('T')[0]);
+  }
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between bg-white p-4 hand-border">
@@ -32,7 +44,13 @@ export default async function FlashDeals(props: {
         </div>
         <PropertySelector properties={properties} activeId={activeId} basePath="/host/escapes" />
       </div>
-      <CalendarPanel key={activeId || 'none'} properties={properties} activeId={activeId} />
+      <CalendarPanel 
+        key={activeId || 'none'} 
+        properties={properties} 
+        activeId={activeId} 
+        initialBlocked={initialBlocked}
+        initialSpontaneous={initialSpontaneous}
+      />
     </div>
   );
 }

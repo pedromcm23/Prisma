@@ -5,12 +5,13 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay,
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { toggleBlockedDate, toggleSpontaneousDate } from "@/app/actions/availability";
 
 import { PropertySelector } from "../preview/property-selector";
 
-export function CalendarPanel({ properties = [], activeId }: { properties?: { id: string, name: string }[], activeId?: string }) {
-  const [blockedDates, setBlockedDates] = useState<string[]>([]);
-  const [spontaneousDates, setSpontaneousDates] = useState<string[]>([]);
+export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[] }) {
+  const [blockedDates, setBlockedDates] = useState<string[]>(initialBlocked);
+  const [spontaneousDates, setSpontaneousDates] = useState<string[]>(initialSpontaneous);
   const [cursor, setCursor] = useState(() => new Date());
 
   const days = useMemo(() => {
@@ -23,22 +24,54 @@ export function CalendarPanel({ properties = [], activeId }: { properties?: { id
   const iso = (d: Date) => format(d, "yyyy-MM-dd");
   const [focused, setFocused] = useState<string | null>(null);
 
-  const toggleBlocked = (key: string) => {
-    if (blockedDates.includes(key)) {
+  const toggleBlocked = async (key: string) => {
+    if (!activeId) return;
+    
+    const wasBlocked = blockedDates.includes(key);
+    
+    // Optimistic update
+    if (wasBlocked) {
       setBlockedDates(prev => prev.filter(d => d !== key));
       setSpontaneousDates(prev => prev.filter(d => d !== key));
     } else {
       setBlockedDates(prev => [...prev, key]);
     }
+    
+    try {
+      await toggleBlockedDate(activeId, new Date(key).toISOString());
+    } catch (e) {
+      // Revert on error
+      if (wasBlocked) {
+        setBlockedDates(prev => [...prev, key]);
+      } else {
+        setBlockedDates(prev => prev.filter(d => d !== key));
+      }
+    }
   };
 
-  const toggleSpontaneous = (key: string) => {
-    if (spontaneousDates.includes(key)) {
+  const toggleSpontaneous = async (key: string) => {
+    if (!activeId) return;
+    
+    const wasSpontaneous = spontaneousDates.includes(key);
+    
+    // Optimistic update
+    if (wasSpontaneous) {
       setSpontaneousDates(prev => prev.filter(d => d !== key));
     } else {
       setSpontaneousDates(prev => [...prev, key]);
       if (!blockedDates.includes(key)) {
-        setBlockedDates(prev => [...prev, key]); // ensure it's blocked from regular bookings
+        setBlockedDates(prev => [...prev, key]);
+      }
+    }
+    
+    try {
+      await toggleSpontaneousDate(activeId, new Date(key).toISOString());
+    } catch (e) {
+      // Revert on error
+      if (wasSpontaneous) {
+        setSpontaneousDates(prev => [...prev, key]);
+      } else {
+        setSpontaneousDates(prev => prev.filter(d => d !== key));
       }
     }
   };

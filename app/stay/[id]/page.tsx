@@ -89,7 +89,35 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
     data.rooms = [{ name: "Standard Room", price: 100, amenities: [], photos: [] }];
   }
 
+  // Fetch unavailable dates (blocked by host or already booked)
+  let unavailableDates: string[] = [];
+  try {
+    const blocked = await prisma.blockedDate.findMany({
+      where: { propertyId: property.id, isBlocked: true },
+      select: { date: true }
+    });
+    
+    const bookings = await prisma.booking.findMany({
+      where: { propertyId: property.id, status: "CONFIRMED" },
+      select: { startDate: true, endDate: true }
+    });
+
+    const unavailableSet = new Set(blocked.map(b => b.date.toISOString().split('T')[0]));
+    
+    bookings.forEach(b => {
+      let d = new Date(b.startDate);
+      while (d < b.endDate) {
+        unavailableSet.add(d.toISOString().split('T')[0]);
+        d.setDate(d.getDate() + 1);
+      }
+    });
+    
+    unavailableDates = Array.from(unavailableSet);
+  } catch (e) {
+    console.error("Failed to fetch availability:", e);
+  }
+
   return (
-    <HotelWebsite data={data} />
+    <HotelWebsite data={data} propertyId={property.id} unavailableDates={unavailableDates} />
   );
 }
