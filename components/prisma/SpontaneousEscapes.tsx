@@ -3,7 +3,7 @@ import { Zap, Clock, Sparkles, ArrowRight, Star, MapPin } from "lucide-react";
 import { getSpontaneousStays, type Listing } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
 
-export function SpontaneousEscapes({ listings }: { listings?: Listing[] }) {
+export function SpontaneousEscapes({ listings, isAuthenticated, onAuthRequired }: { listings?: Listing[], isAuthenticated?: boolean, onAuthRequired?: () => void }) {
   const stays = getSpontaneousStays(listings);
 
   return (
@@ -99,7 +99,16 @@ export function SpontaneousEscapes({ listings }: { listings?: Listing[] }) {
                     <span className="text-xs text-muted-foreground">/ night</span>
                   </div>
                 </div>
-                <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-10 font-bold hover:bg-primary/90">
+                <Button 
+                  className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-10 font-bold hover:bg-primary/90"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      onAuthRequired?.();
+                    } else {
+                      window.open(`/stay/${s.slug}`, "_blank");
+                    }
+                  }}
+                >
                   Grab it <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </div>

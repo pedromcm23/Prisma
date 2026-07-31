@@ -35,8 +35,7 @@ export default async function Landing() {
   return (
     <div className="min-h-screen bg-cream text-foreground">
       <AppHeader user={session?.user} role={role} />
-      
-      <GuestPortal listings={dbListings} />
+      <GuestPortal listings={dbListings} isAuthenticated={!!session} />
 
       <footer className="border-t-2 border-foreground bg-primary text-primary-foreground mt-12">
         <div className="mx-auto max-w-6xl px-4 py-8 flex flex-wrap items-center justify-between gap-3">
