@@ -29,7 +29,7 @@ export function PreviewClient({ initialData, propertyId }: { initialData: Proper
   const handlePublish = async (kit: any) => {
     setIsPublishing(true);
     try {
-      await saveBoutiqueSite(data, kit, "demo-host-id");
+      await saveBoutiqueSite(data, kit, propertyId);
       if (typeof window !== "undefined") {
         sessionStorage.removeItem(draftKey);
       }
