@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, LogOut, UserPlus } from "lucide-react";
+import { Sparkles, LogOut, UserPlus, Info, CalendarCheck, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { signOut } from "next-auth/react";
@@ -22,7 +22,11 @@ export function AppHeader({ user, role }: { user?: any, role?: string }) {
         <div className="flex-1" />
 
         {status === "unauth" && (
-          <Link href="/api/auth/signin">
+          <div className="flex items-center gap-4">
+            <Link href="/about" className="flex items-center gap-1.5 text-sm font-bold hover:text-primary transition-colors">
+              <Info className="w-4 h-4" /> About Us
+            </Link>
+            <Link href="/api/auth/signin">
             <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-xl h-10 px-4 font-bold hover:bg-primary/90">
               Sign In / Register
             </Button>
@@ -30,8 +34,17 @@ export function AppHeader({ user, role }: { user?: any, role?: string }) {
         )}
 
         {status === "guest" && (
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-4 sm:gap-6">
             <StatusPill label="GUEST" tone="mustard" />
+            <Link href="/guest/bookings" className="hidden sm:flex items-center gap-1.5 text-sm font-bold hover:text-primary transition-colors">
+              <CalendarCheck className="w-4 h-4" /> My Bookings
+            </Link>
+            <Link href="/guest/rewards" className="hidden sm:flex items-center gap-1.5 text-sm font-bold hover:text-primary transition-colors">
+              <Gift className="w-4 h-4" /> My Rewards
+            </Link>
+            <Link href="/about" className="hidden sm:flex items-center gap-1.5 text-sm font-bold hover:text-primary transition-colors">
+              <Info className="w-4 h-4" /> About Us
+            </Link>
             <Link href="/host/builder" className="hidden sm:inline-block">
               <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-xl h-10 px-4 font-bold hover:bg-primary/90">
                 <UserPlus className="w-4 h-4 mr-1" /> Become a Host
@@ -42,8 +55,11 @@ export function AppHeader({ user, role }: { user?: any, role?: string }) {
         )}
 
         {status === "host" && (
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-4 sm:gap-6">
             <StatusPill label="HOST" tone="primary" />
+            <Link href="/about" className="hidden sm:flex items-center gap-1.5 text-sm font-bold hover:text-primary transition-colors">
+              <Info className="w-4 h-4" /> About Us
+            </Link>
             <IconOut onClick={() => signOut({ callbackUrl: '/' })} label={user?.name} />
           </div>
         )}

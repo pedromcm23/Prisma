@@ -44,8 +44,8 @@ export default async function HostPreview(props: {
   } else {
     // Fallback to the exact Lovable mock data
     data = emptyData();
-    data.name = "Casa Amarela";
-    data.location = "Alfama, Lisbon";
+    data.name = "Example Property";
+    data.location = "City Center";
     data.tagline = "A sunlit hideaway on the old cobbled hill";
     data.specials = [
       "Homemade sourdough breakfast on the terrace",

@@ -95,7 +95,13 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
         <div className="flex items-center justify-between mb-4">
           <button onClick={() => setCursor((c) => subMonths(c, 1))} className="w-9 h-9 rounded-full border-2 border-foreground shadow-hard-sm hover:bg-mustard/30 flex items-center justify-center"><ChevronLeft className="w-4 h-4" /></button>
           <p className="font-display text-2xl font-extrabold">{format(cursor, "MMMM yyyy")}</p>
-          <button onClick={() => setCursor((c) => addMonths(c, 1))} className="w-9 h-9 rounded-full border-2 border-foreground shadow-hard-sm hover:bg-mustard/30 flex items-center justify-center"><ChevronRight className="w-4 h-4" /></button>
+          <button 
+            onClick={() => setCursor((c) => addMonths(c, 1))} 
+            disabled={isAfter(addMonths(cursor, 1), addYears(new Date(), 2))}
+            className="w-9 h-9 rounded-full border-2 border-foreground shadow-hard-sm hover:bg-mustard/30 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
