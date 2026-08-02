@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { PropertyData, RoomType } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
+import { generatePropertyCopy } from "@/app/actions/ai";
 
 type Props = {
   data: PropertyData;
@@ -21,6 +22,7 @@ const AMENITY_SUGGESTIONS = ["Wi-Fi", "Terrace", "Kitchen", "Sea view", "Balcony
 export function OnboardingWizard({ data, setData, onGenerate }: Props) {
   const [step, setStep] = useState(1);
   const [importing, setImporting] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const total = 4;
 
   const update = <K extends keyof PropertyData>(k: K, v: PropertyData[K]) =>
@@ -53,6 +55,31 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
     update("reviews", imported);
     setImporting(false);
     toast.success("✨ Imported 3 verified guest reviews");
+  };
+
+  const handleMagicWrite = async () => {
+    if (!data.name || !data.location) {
+      toast.error("Please enter a name and location first");
+      return;
+    }
+    setIsGeneratingAI(true);
+    try {
+      const res = await generatePropertyCopy(data.name, data.location);
+      if (res.success && res.data) {
+        setData({
+          ...data,
+          tagline: res.data.tagline,
+          specials: res.data.specials,
+        });
+        toast.success("✨ Tagline and specials generated!");
+      } else {
+        toast.error("Failed to generate copy");
+      }
+    } catch (e) {
+      toast.error("An error occurred");
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   return (
@@ -115,7 +142,12 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
               </div>
             </div>
             <div>
-              <Label htmlFor="tag">Short tagline (optional)</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="tag">Short tagline (optional)</Label>
+                <Button type="button" size="sm" variant="ghost" onClick={handleMagicWrite} disabled={isGeneratingAI || !data.name || !data.location} className="h-7 px-2 text-accent hover:text-accent/80 hover:bg-accent/10">
+                  <Sparkles className="w-3 h-3 mr-1" /> {isGeneratingAI ? "Writing..." : "Magic Write"}
+                </Button>
+              </div>
               <Input id="tag" value={data.tagline} onChange={(e) => update("tagline", e.target.value)}
                 placeholder="A sunlit hideaway on the old cobbled hill"
                 className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12" />
@@ -148,9 +180,14 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
 
         {step === 2 && (
           <div className="space-y-5">
-            <p className="text-muted-foreground -mt-2">
-              Three tiny, specific things that make guests fall in love. Sensory & concrete always beats generic.
-            </p>
+            <div className="flex items-center justify-between -mt-2">
+              <p className="text-muted-foreground">
+                Three tiny, specific things that make guests fall in love. Sensory & concrete always beats generic.
+              </p>
+              <Button type="button" size="sm" variant="ghost" onClick={handleMagicWrite} disabled={isGeneratingAI || !data.name || !data.location} className="h-7 px-2 text-accent hover:text-accent/80 hover:bg-accent/10 shrink-0">
+                <Sparkles className="w-3 h-3 mr-1" /> {isGeneratingAI ? "Writing..." : "Auto-Fill"}
+              </Button>
+            </div>
             {data.specials.map((s, i) => (
               <div key={i}>
                 <Label>Special #{i + 1}</Label>
