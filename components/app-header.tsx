@@ -30,7 +30,8 @@ export function AppHeader({ user, role }: { user?: any, role?: string }) {
             <Button className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard-sm rounded-xl h-10 px-4 font-bold hover:bg-primary/90">
               Sign In / Register
             </Button>
-          </Link>
+            </Link>
+          </div>
         )}
 
         {status === "guest" && (
