@@ -20,6 +20,7 @@ export function BuilderClient({ initialData, propertyId }: { initialData: Proper
             if (typeof window !== "undefined") {
               const key = `prisma_draft_${propertyId || 'new'}`;
               globalDraftStore[key] = data;
+              sessionStorage.setItem(key, JSON.stringify(data));
             }
             router.push(`/host/preview${propertyId ? `?id=${propertyId}` : ''}`);
           }}

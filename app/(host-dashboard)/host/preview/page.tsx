@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { PreviewClient } from "./preview-client";
 import { emptyData, PropertyData } from "@/lib/prisma-types";
 import { PropertySelector } from "./property-selector";
+import { themeToBrandKit } from "@/lib/brand-kit";
 
 export default async function HostPreview(props: {
   searchParams: Promise<{ id?: string }>;
@@ -18,7 +19,7 @@ export default async function HostPreview(props: {
   const properties = await prisma.property.findMany({
     where: { hostId },
     orderBy: { createdAt: 'desc' },
-    select: { id: true, name: true, landingPageJson: true }
+    select: { id: true, name: true, description: true, landingPageJson: true, brandKitJson: true }
   });
 
   let property = properties[0];
@@ -28,6 +29,16 @@ export default async function HostPreview(props: {
   }
 
   let data: PropertyData;
+  let initialBrandKit = themeToBrandKit("folk-pop");
+
+  if (property && property.brandKitJson) {
+    try {
+      const dbKit = property.brandKitJson as any;
+      if (dbKit && dbKit.themeId) {
+        initialBrandKit = { ...themeToBrandKit(dbKit.themeId), ...dbKit };
+      }
+    } catch {}
+  }
 
   if (property && property.landingPageJson && Object.keys(property.landingPageJson).length > 0) {
     const json = property.landingPageJson as any;
@@ -75,7 +86,13 @@ export default async function HostPreview(props: {
         <PropertySelector properties={properties} activeId={property?.id} basePath="/host/preview" />
       </div>
       <div className="bg-white">
-        <PreviewClient key={property?.id || "fallback"} initialData={data} propertyId={property?.id} />
+        <PreviewClient 
+          key={property?.id || "fallback"} 
+          initialData={data} 
+          propertyId={property?.id} 
+          initialBrandKit={initialBrandKit}
+          hasNoProperty={!property}
+        />
       </div>
     </div>
   );
