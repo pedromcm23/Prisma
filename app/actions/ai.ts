@@ -25,7 +25,24 @@ Location: ${location || "Unknown Location"}`,
 
     return { success: true, data: object };
     } catch (error: any) {
-    console.error("AI Generation Error:", error);
-    return { success: false, error: error.message || "Failed to generate copy" };
+    let availableModels = "";
+    try {
+      const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+      if (apiKey) {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const data = await res.json();
+        if (data.models) {
+          const names = data.models
+            .filter((m: any) => m.supportedGenerationMethods?.includes("generateContent"))
+            .map((m: any) => m.name.replace("models/", ""))
+            .filter((n: string) => n.includes("gemini"));
+          availableModels = ` (Available: ${names.slice(0, 3).join(", ")})`;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    
+    return { success: false, error: (error.message || "Failed to generate copy") + availableModels };
   }
 }
