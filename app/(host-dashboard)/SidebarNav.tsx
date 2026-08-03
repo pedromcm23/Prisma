@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Hammer, Eye, BookOpen, CalendarDays, Home, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function SidebarNav() {
+export function SidebarNav({ hasProperties }: { hasProperties?: boolean }) {
   const pathname = usePathname();
 
   const nav = [
@@ -22,6 +22,20 @@ export function SidebarNav() {
       {nav.map((item) => {
         const isActive = pathname === item.id || (item.id === '/host/preview' && pathname.startsWith('/stay/'));
         const Icon = item.icon;
+        const isDisabled = item.id === '/host/preview' && !hasProperties;
+
+        if (isDisabled) {
+          return (
+            <div
+              key={item.id}
+              className="w-full text-left flex items-center gap-2 px-3 h-10 rounded-lg text-sm font-bold opacity-40 cursor-not-allowed text-foreground"
+              title="You need to create a property first"
+            >
+              <Icon className="w-4 h-4" /> {item.label}
+            </div>
+          );
+        }
+
         return (
           <Link
             key={item.id}

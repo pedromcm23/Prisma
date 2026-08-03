@@ -28,6 +28,11 @@ export default async function HostDashboardLayout({ children }: { children: Reac
     });
   }
 
+  const propertyCount = await prisma.property.count({
+    where: { hostId: session.user.id }
+  });
+  const hasProperties = propertyCount > 0;
+
   return (
     <div className="flex-1 bg-cream flex flex-col">
       {/* Global Host Header */}
@@ -39,7 +44,7 @@ export default async function HostDashboardLayout({ children }: { children: Reac
         <aside className="w-full md:w-[240px] md:shrink-0">
           <div className="hand-border bg-white p-2">
             <p className="px-3 pt-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Host dashboard</p>
-            <SidebarNav />
+            <SidebarNav hasProperties={hasProperties} />
           </div>
         </aside>
 
