@@ -5,6 +5,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { createBooking } from "@/app/actions/booking";
 import type { DateRange } from "react-day-picker";
 import { differenceInDays, parseISO, format, addYears } from "date-fns";
+import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 
 export function HotelWebsite({ 
   data, 
@@ -21,6 +22,9 @@ export function HotelWebsite({
   flashDealEnd?: string,
   flashDeals?: { date: Date, dealPrice: number | null }[]
 }) {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     if (flashDealStart && flashDealEnd) {
       return { from: parseISO(flashDealStart), to: parseISO(flashDealEnd) };
@@ -207,6 +211,23 @@ export function HotelWebsite({
             ))}
           </div>
         </div>
+        
+        {isLoaded && data.lat !== undefined && data.lng !== undefined && (
+          <div className="max-w-6xl mx-auto mt-16 h-[400px] w-full" style={{ border: "1px solid var(--hw-line)" }}>
+            <GoogleMap
+              mapContainerStyle={{ width: '100%', height: '100%' }}
+              center={{ lat: data.lat, lng: data.lng }}
+              zoom={14}
+              options={{
+                disableDefaultUI: true,
+                zoomControl: true,
+                scrollwheel: false,
+              }}
+            >
+              <MarkerF position={{ lat: data.lat, lng: data.lng }} />
+            </GoogleMap>
+          </div>
+        )}
       </section>
 
       {/* Booking */}
