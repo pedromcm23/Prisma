@@ -23,13 +23,24 @@ export async function getProperties(options?: { take?: number }) {
       const image = json?.rooms?.[0]?.photos?.[0] || null;
       const slug = (p.name || "your-stay").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-      return {
-        slug: slug, // using name-based slug for pretty URLs
-        name: p.name,
-        location: p.description || "Unknown Location",
-        neighborhood: "City Center", // Placeholder since schema lacks neighborhood
-        tagline: p.description?.substring(0, 50) || "A beautiful stay",
-        price: json?.rooms?.[0]?.price ?? json?.basePrice ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.price ?? 150,
+        const basePrice = json?.rooms?.[0]?.price ?? json?.basePrice ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.price ?? 150;
+        let displayPrice = basePrice;
+        
+        if (json?.monthlyPrices && Object.keys(json.monthlyPrices).length > 0) {
+          let sum = 0;
+          for (let i = 0; i < 12; i++) {
+            sum += json.monthlyPrices[i] ?? basePrice;
+          }
+          displayPrice = Math.round(sum / 12);
+        }
+
+        return {
+          slug: slug, // using name-based slug for pretty URLs
+          name: p.name,
+          location: p.description || "Unknown Location",
+          neighborhood: "City Center", // Placeholder since schema lacks neighborhood
+          tagline: p.description?.substring(0, 50) || "A beautiful stay",
+          price: displayPrice,
         rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? (4.7 + Math.random() * 0.3),
         hostName: p.host.name || "Unknown Host",
         tags: ["Cozy", "WiFi"], // Placeholder
@@ -113,9 +124,18 @@ export async function getSpontaneousProperties() {
       const json = p.landingPageJson as any;
       const image = json?.rooms?.[0]?.photos?.[0] || null;
       const slug = p.id;
-      const price = json?.rooms?.[0]?.price || json?.basePrice || 150;
+      const basePrice = json?.rooms?.[0]?.price || json?.basePrice || 150;
+      let displayPrice = basePrice;
+      if (json?.monthlyPrices && Object.keys(json.monthlyPrices).length > 0) {
+        let sum = 0;
+        for (let i = 0; i < 12; i++) {
+          sum += json.monthlyPrices[i] ?? basePrice;
+        }
+        displayPrice = Math.round(sum / 12);
+      }
+      
       const discount = 0.2;
-      const dealPrice = customDealPrice ?? Math.round(price * (1 - discount));
+      const dealPrice = customDealPrice ?? Math.round(displayPrice * (1 - discount));
       const isToday = firstDate.getTime() === today.getTime();
       const isTomorrow = firstDate.getTime() === today.getTime() + 24 * 60 * 60 * 1000;
       
@@ -133,8 +153,8 @@ export async function getSpontaneousProperties() {
         location: p.description || "Unknown Location",
         neighborhood: "City Center",
         tagline: p.description?.substring(0, 50) || "A beautiful stay",
-        price: price,
-        originalPrice: price,
+        price: displayPrice,
+        originalPrice: displayPrice,
         dealPrice: dealPrice,
         rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? (4.7 + Math.random() * 0.3),
         hostName: p.host.name || "Unknown Host",
