@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Map, LayoutGrid, Star, Search, Sparkles, MapPin, Zap, ArrowRight, Home, Shield, Users, LogIn } from "lucide-react";
 import dynamic from "next/dynamic";
-import { X } from "lucide-react";
+
 
 const DynamicMap = dynamic(() => import("@/components/map-view"), { 
   ssr: false,
