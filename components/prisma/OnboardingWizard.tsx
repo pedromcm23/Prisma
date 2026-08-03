@@ -10,6 +10,9 @@ import {
 import type { PropertyData, RoomType } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
 import { generatePropertyCopy } from "@/app/actions/ai";
+import { useLoadScript, Autocomplete } from "@react-google-maps/api";
+
+const libraries: ("places")[] = ["places"];
 
 type Props = {
   data: PropertyData;
@@ -23,6 +26,13 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
   const [step, setStep] = useState(1);
   const [importing, setImporting] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries,
+  });
+
   const total = 4;
 
   const update = <K extends keyof PropertyData>(k: K, v: PropertyData[K]) =>
@@ -136,9 +146,31 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
               </div>
               <div className="flex-1">
                 <Label htmlFor="loc">Location</Label>
-                <Input id="loc" value={data.location} onChange={(e) => update("location", e.target.value)}
-                  placeholder="e.g. Alfama, Lisbon"
-                  className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12" />
+                {isLoaded ? (
+                  <Autocomplete
+                    onLoad={(ac) => { autocompleteRef.current = ac; }}
+                    onPlaceChanged={() => {
+                      const place = autocompleteRef.current?.getPlace();
+                      if (place?.formatted_address) {
+                        const lat = place.geometry?.location?.lat();
+                        const lng = place.geometry?.location?.lng();
+                        setData({ 
+                          ...data, 
+                          location: place.formatted_address,
+                          ...(lat && lng ? { lat, lng } : {})
+                        });
+                      }
+                    }}
+                  >
+                    <Input id="loc" value={data.location} onChange={(e) => update("location", e.target.value)}
+                      placeholder="e.g. Alfama, Lisbon"
+                      className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12 w-full" />
+                  </Autocomplete>
+                ) : (
+                  <Input id="loc" value={data.location} onChange={(e) => update("location", e.target.value)}
+                    placeholder="e.g. Alfama, Lisbon"
+                    className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12 w-full" />
+                )}
               </div>
             </div>
             <div>

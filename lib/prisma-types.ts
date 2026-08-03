@@ -19,6 +19,8 @@ export type PropertyData = {
   hostInterests: string;
   hostLoves: string;
   importUrl: string;
+  lat?: number;
+  lng?: number;
 };
 
 export const emptyData = (): PropertyData => ({
