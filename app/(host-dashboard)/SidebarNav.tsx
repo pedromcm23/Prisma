@@ -28,8 +28,7 @@ export function SidebarNav({ hasProperties }: { hasProperties?: boolean }) {
           return (
             <div
               key={item.id}
-              className="w-full text-left flex items-center gap-2 px-3 h-10 rounded-lg text-sm font-bold opacity-40 cursor-not-allowed text-foreground"
-              title="You need to create a property first"
+              className="w-full text-left flex items-center gap-2 px-3 h-10 rounded-lg text-sm font-bold text-foreground cursor-default"
             >
               <Icon className="w-4 h-4" /> {item.label}
             </div>
