@@ -7,7 +7,7 @@ import { z } from "zod";
 export async function generatePropertyCopy(name: string, location: string) {
   try {
     const { object } = await generateObject({
-      model: google("gemini-1.5-pro-latest"),
+      model: google("gemini-1.5-pro"),
       system: `You are an expert luxury hospitality copywriter. You write in English.
 Your goal is to help a host create a beautiful, high-converting direct-booking website.
 Given the property's name and location, deduce its likely ambiance and generate:
