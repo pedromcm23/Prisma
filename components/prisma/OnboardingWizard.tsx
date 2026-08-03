@@ -59,7 +59,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
 
   const handleMagicWrite = async () => {
     if (!data.name || !data.location) {
-      toast.error("Por favor preenche o Nome e a Localização primeiro!");
+      toast.error("Please fill in the Name and Location first!");
       return;
     }
     setIsGeneratingAI(true);
