@@ -71,11 +71,16 @@ export async function getSpontaneousProperties() {
     const uniqueProps = new Map();
     spontaneousDates.forEach(sd => {
       if (!uniqueProps.has(sd.property.id)) {
-        uniqueProps.set(sd.property.id, { property: sd.property, firstDate: sd.date, dealPrice: sd.dealPrice });
+        uniqueProps.set(sd.property.id, { property: sd.property, firstDate: sd.date, lastDate: sd.date, dealPrice: sd.dealPrice });
+      } else {
+        const existing = uniqueProps.get(sd.property.id);
+        if (sd.date > existing.lastDate) {
+          existing.lastDate = sd.date;
+        }
       }
     });
 
-    const results = Array.from(uniqueProps.values()).map(({ property: p, firstDate, dealPrice: customDealPrice }) => {
+    const results = Array.from(uniqueProps.values()).map(({ property: p, firstDate, lastDate, dealPrice: customDealPrice }) => {
       const json = p.landingPageJson as any;
       const image = json?.rooms?.[0]?.photos?.[0] || null;
       const slug = p.id;
@@ -86,8 +91,12 @@ export async function getSpontaneousProperties() {
       const isTomorrow = firstDate.getTime() === today.getTime() + 24 * 60 * 60 * 1000;
       
       let windowLabel = format(firstDate, "MMM d");
-      if (isToday) windowLabel = "Tonight";
-      else if (isTomorrow) windowLabel = "Tomorrow";
+      if (lastDate.getTime() > firstDate.getTime()) {
+         windowLabel += ` - ${format(lastDate, "MMM d")}`;
+      } else {
+         if (isToday) windowLabel = "Tonight";
+         else if (isTomorrow) windowLabel = "Tomorrow";
+      }
 
       return {
         slug: slug,
@@ -108,6 +117,8 @@ export async function getSpontaneousProperties() {
         hoursLeft: 24,
         perks: ["Flash Deal Discount", "Exclusive Bundle"],
         window: windowLabel,
+        startDate: firstDate.toISOString().split('T')[0],
+        endDate: lastDate.toISOString().split('T')[0],
       };
     });
 

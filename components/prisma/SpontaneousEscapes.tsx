@@ -101,7 +101,7 @@ export function SpontaneousEscapes({ stays = [], isAuthenticated, onAuthRequired
                     if (!isAuthenticated) {
                       onAuthRequired?.();
                     } else {
-                      window.open(`/stay/${s.slug}`, "_blank");
+                      window.open(`/stay/${s.slug}?flashDealStart=${s.startDate}&flashDealEnd=${s.endDate}&flashDealPrice=${s.dealPrice}`, "_blank");
                     }
                   }}
                 >

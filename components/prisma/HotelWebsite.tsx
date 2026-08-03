@@ -6,8 +6,27 @@ import { createBooking } from "@/app/actions/booking";
 import type { DateRange } from "react-day-picker";
 import { differenceInDays, parseISO, format, addYears } from "date-fns";
 
-export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data: PropertyData, propertyId: string, unavailableDates?: string[] }) {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+export function HotelWebsite({ 
+  data, 
+  propertyId, 
+  unavailableDates = [],
+  flashDealStart,
+  flashDealEnd,
+  flashDealPrice
+}: { 
+  data: PropertyData, 
+  propertyId: string, 
+  unavailableDates?: string[],
+  flashDealStart?: string,
+  flashDealEnd?: string,
+  flashDealPrice?: number
+}) {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    if (flashDealStart && flashDealEnd) {
+      return { from: parseISO(flashDealStart), to: parseISO(flashDealEnd) };
+    }
+    return undefined;
+  });
   const [room, setRoom] = useState(0);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -21,7 +40,7 @@ export function HotelWebsite({ data, propertyId, unavailableDates = [] }: { data
   const rooms = data.rooms && data.rooms.length > 0 ? data.rooms : [
     { name: "Signature Room", price: data.basePrice || 150, amenities: ["WiFi", "AC"], photos: [] }
   ];
-  const selectedRoomPrice = rooms[room]?.price || data.basePrice || 150;
+  const selectedRoomPrice = flashDealPrice || (rooms[room]?.price || data.basePrice || 150);
   
   const nights = dateRange?.from && dateRange?.to ? Math.max(1, differenceInDays(dateRange.to, dateRange.from)) : 0;
   const total = selectedRoomPrice * nights;

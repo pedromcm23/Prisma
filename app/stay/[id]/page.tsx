@@ -6,9 +6,18 @@ import { emptyData, type PropertyData } from "@/lib/prisma-types";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-export default async function PublicPropertyPage(props: { params: Promise<{ id: string }> }) {
+export default async function PublicPropertyPage(props: { 
+  params: Promise<{ id: string }>,
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const session = await auth();
   const params = await props.params;
+  const searchParams = await props.searchParams;
+  
+  const flashDealStart = searchParams.flashDealStart as string | undefined;
+  const flashDealEnd = searchParams.flashDealEnd as string | undefined;
+  const flashDealPrice = searchParams.flashDealPrice ? parseFloat(searchParams.flashDealPrice as string) : undefined;
+
   if (!session) {
     redirect(`/login?callbackUrl=/stay/${params.id}`);
   }
@@ -113,11 +122,29 @@ export default async function PublicPropertyPage(props: { params: Promise<{ id: 
     });
     
     unavailableDates = Array.from(unavailableSet);
+    
+    // If it's a Flash Deal, the deal dates shouldn't be blocked for the guest to book!
+    if (flashDealStart && flashDealEnd) {
+      let d = parseISO(flashDealStart);
+      const end = parseISO(flashDealEnd);
+      while (d <= end) {
+        const iso = d.toISOString().split('T')[0];
+        unavailableDates = unavailableDates.filter(u => u !== iso);
+        d.setDate(d.getDate() + 1);
+      }
+    }
   } catch (e) {
     console.error("Failed to fetch availability:", e);
   }
 
   return (
-    <HotelWebsite data={data} propertyId={property.id} unavailableDates={unavailableDates} />
+    <HotelWebsite 
+      data={data} 
+      propertyId={property.id} 
+      unavailableDates={unavailableDates}
+      flashDealStart={flashDealStart}
+      flashDealEnd={flashDealEnd}
+      flashDealPrice={flashDealPrice}
+    />
   );
 }

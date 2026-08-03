@@ -10,36 +10,29 @@ import { Input } from "@/components/ui/input";
 
 import { PropertySelector } from "../preview/property-selector";
 
-function getLargestContiguousBlock(blockedDates: string[]): string[] {
-  if (blockedDates.length === 0) return [];
-  
+function getContiguousBlockForDate(blockedDates: string[], targetDate: string): string[] {
+  if (!blockedDates.includes(targetDate)) return [targetDate];
+
   const sorted = [...blockedDates].sort();
-  let maxBlock: string[] = [];
+  let blocks: string[][] = [];
   let currentBlock: string[] = [sorted[0]];
   
   for (let i = 1; i < sorted.length; i++) {
     const prev = new Date(sorted[i - 1]);
     const curr = new Date(sorted[i]);
-    
-    // Check if curr is exactly 1 day after prev
     const nextDay = new Date(prev);
     nextDay.setDate(nextDay.getDate() + 1);
     
     if (curr.toISOString().split('T')[0] === nextDay.toISOString().split('T')[0]) {
       currentBlock.push(sorted[i]);
     } else {
-      if (currentBlock.length > maxBlock.length) {
-        maxBlock = currentBlock;
-      }
+      blocks.push(currentBlock);
       currentBlock = [sorted[i]];
     }
   }
+  blocks.push(currentBlock);
   
-  if (currentBlock.length > maxBlock.length) {
-    maxBlock = currentBlock;
-  }
-  
-  return maxBlock;
+  return blocks.find(b => b.includes(targetDate)) || [targetDate];
 }
 
 export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [], bookedDates = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[], bookedDates?: string[] }) {
@@ -180,7 +173,7 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
         </div>
 
         {focused && (() => {
-          let bundle = getLargestContiguousBlock(blockedDates);
+          let bundle = getContiguousBlockForDate(blockedDates, focused);
           if (bundle.length <= 1) {
             bundle = [focused];
           }
