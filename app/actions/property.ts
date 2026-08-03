@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { SAMPLE_LISTINGS } from "@/lib/prisma-types";
 
 export async function getProperties(options?: { take?: number }) {
   try {
@@ -33,8 +34,8 @@ export async function getProperties(options?: { take?: number }) {
         tags: ["Cozy", "WiFi"], // Placeholder
         color: "from-primary to-mustard", // Placeholder
         image,
-        lat: 50, // Placeholder
-        lng: 50, // Placeholder
+        lat: json?.lat ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lat ?? 38.7223,
+        lng: json?.lng ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lng ?? -9.1393,
       };
     });
   } catch (error) {
@@ -101,8 +102,8 @@ export async function getSpontaneousProperties() {
         tags: ["Cozy", "WiFi"],
         color: "from-primary to-mustard",
         image,
-        lat: 50,
-        lng: 50,
+        lat: json?.lat ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lat ?? 38.7223,
+        lng: json?.lng ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lng ?? -9.1393,
         hoursLeft,
         perks: ["Free late checkout (2pm)", "Welcome drinks on the terrace"],
         window: isToday ? "Tonight" : "Tomorrow",
