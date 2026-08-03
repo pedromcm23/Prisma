@@ -169,6 +169,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
                   <RoomCard
                     key={i}
                     room={r}
+                    basePrice={data.basePrice}
                     onChange={(patch) => updateRoom(i, patch)}
                     onRemove={data.rooms.length > 1 ? () => update("rooms", data.rooms.filter((_, j) => j !== i)) : undefined}
                   />
@@ -319,9 +320,10 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
 }
 
 function RoomCard({
-  room, onChange, onRemove,
+  room, basePrice, onChange, onRemove,
 }: {
   room: RoomType;
+  basePrice: number;
   onChange: (patch: Partial<RoomType>) => void;
   onRemove?: () => void;
 }) {
@@ -391,7 +393,7 @@ function RoomCard({
           <div className="relative w-32">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
           <Input type="number" 
-            placeholder={data.basePrice.toString()}
+            placeholder={basePrice.toString()}
             value={room.price === 0 ? "" : room.price}
             onChange={(e) => onChange({ price: e.target.value === "" ? 0 : Number(e.target.value) })}
             className="border-2 border-foreground rounded-xl h-11 pl-7 bg-white" />

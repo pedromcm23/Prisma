@@ -33,9 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${fraunces.variable} ${caveat.variable} ${nunito.variable} antialiased`}
-      >
+      <body className={`${fraunces.variable} ${nunito.variable} ${caveat.variable} antialiased`}>
         {children}
         <Toaster position="bottom-right" richColors />
       </body>
