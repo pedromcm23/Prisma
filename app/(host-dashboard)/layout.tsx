@@ -11,7 +11,7 @@ export default async function HostDashboardLayout({ children }: { children: Reac
   const session = await auth();
   
   if (!session?.user?.id) {
-    redirect("/api/auth/signin?callbackUrl=/host/dashboard");
+    redirect("/api/auth/signin?callbackUrl=/host/properties");
   }
 
   // Real-time DB check to ensure role is HOST

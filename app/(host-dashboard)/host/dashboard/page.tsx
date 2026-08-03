@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function HostDashboard() {
-  redirect("/host/builder");
+  redirect("/host/properties");
 }
