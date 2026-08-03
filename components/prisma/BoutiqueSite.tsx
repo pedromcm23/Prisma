@@ -457,7 +457,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
                           className="w-20 h-8 text-xl font-bold text-right border-2 border-foreground rounded-md"
                         />
                       ) : (
-                        <span className="text-2xl font-display font-extrabold">{r.price}</span>
+                        <span className="text-2xl font-display font-extrabold">{r.price || data.basePrice}</span>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">/ night</p>

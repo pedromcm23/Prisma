@@ -158,7 +158,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
                 <Label>Room setup & photos</Label>
                 <Button type="button" size="sm" variant="outline"
                   onClick={() =>
-                    update("rooms", [...data.rooms, { name: "", price: data.basePrice, amenities: [], photos: [] }])
+                    update("rooms", [...data.rooms, { name: "", price: 0, amenities: [], photos: [] }])
                   }
                   className="border-2 border-foreground shadow-hard-sm rounded-lg">
                   <Plus className="w-4 h-4 mr-1" /> Add room
@@ -388,9 +388,11 @@ function RoomCard({
           onChange={(e) => onChange({ name: e.target.value })}
           placeholder="Master Suite · Terrace view"
           className="border-2 border-foreground rounded-xl h-11 flex-1 min-w-[180px] bg-white" />
-        <div className="relative w-32">
+          <div className="relative w-32">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
-          <Input type="number" value={room.price === 0 ? "" : room.price}
+          <Input type="number" 
+            placeholder={data.basePrice.toString()}
+            value={room.price === 0 ? "" : room.price}
             onChange={(e) => onChange({ price: e.target.value === "" ? 0 : Number(e.target.value) })}
             className="border-2 border-foreground rounded-xl h-11 pl-7 bg-white" />
         </div>
