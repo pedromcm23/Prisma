@@ -20,18 +20,7 @@ export default async function HostProperties() {
     }
   });
 
-  if (properties.length === 0) {
-    // Fallback to exact Lovable mock data
-    properties = [
-      {
-        id: "mock-1",
-        name: "Casa Amarela",
-        description: "Alfama, Lisbon",
-        status: "LIVE",
-        landingPageJson: { rooms: [{}] },
-      } as any
-    ];
-  }
+
 
   return (
     <div>
