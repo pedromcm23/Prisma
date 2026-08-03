@@ -22,7 +22,9 @@ export function SidebarNav({ hasProperties }: { hasProperties?: boolean }) {
       {nav.map((item) => {
         const isActive = pathname === item.id || (item.id === '/host/preview' && pathname.startsWith('/stay/'));
         const Icon = item.icon;
-        const isDisabled = item.id === '/host/preview' && (!hasProperties || pathname === '/host/builder');
+        // The Preview Website button is NEVER clickable from the sidebar. 
+        // It's only an indicator for when they are actually on that step.
+        const isDisabled = item.id === '/host/preview';
 
         if (isDisabled) {
           return (
