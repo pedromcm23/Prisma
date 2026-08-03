@@ -23,6 +23,7 @@ import {
 } from "@/lib/brand-kit";
 import { BrandKitDrawer } from "./BrandKitDrawer";
 import { BrandExportModal } from "./BrandExportModal";
+import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 
 const ILLUSTRATIONS = [Coffee, Sun, Waves];
 
@@ -37,6 +38,9 @@ type Props = {
 };
 
 export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, readOnly, initialBrandKit }: Props) {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
   const [editing, setEditing] = useState(!readOnly);
   const [showPublish, setShowPublish] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -282,6 +286,23 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
               className="font-hand text-xl text-mustard"
             />
           </div>
+          
+          {isLoaded && data.lat !== undefined && data.lng !== undefined && (
+            <div className="mt-10 rounded-2xl border-2 border-foreground overflow-hidden shadow-hard-sm bg-cream">
+              <GoogleMap
+                mapContainerStyle={{ width: '100%', height: '400px' }}
+                center={{ lat: data.lat, lng: data.lng }}
+                zoom={14}
+                options={{
+                  disableDefaultUI: true,
+                  zoomControl: true,
+                  scrollwheel: false,
+                }}
+              >
+                <MarkerF position={{ lat: data.lat, lng: data.lng }} />
+              </GoogleMap>
+            </div>
+          )}
         </div>
       </section>
 
