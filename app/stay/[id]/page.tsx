@@ -79,13 +79,21 @@ export default async function PublicPropertyPage(props: {
     notFound();
   }
 
-  // Parse JSON or provide fallback empty data
   let data: PropertyData;
   try {
     const json = property.landingPageJson as any;
     data = { ...emptyData(), ...(json || {}) };
   } catch {
     data = emptyData();
+  }
+  
+  if (data.lat === undefined || data.lng === undefined) {
+    const { SAMPLE_LISTINGS } = await import("@/lib/prisma-types");
+    const sample = SAMPLE_LISTINGS.find(s => s.slug === params.id || s.name === data.name);
+    if (sample) {
+      data.lat = sample.lat;
+      data.lng = sample.lng;
+    }
   }
 
   // Ensure minimum structure for data to prevent runtime crashes
