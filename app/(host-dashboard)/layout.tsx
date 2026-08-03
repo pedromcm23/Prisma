@@ -29,14 +29,14 @@ export default async function HostDashboardLayout({ children }: { children: Reac
   }
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col">
+    <div className="flex-1 bg-cream flex flex-col">
       {/* Global Host Header */}
       <AppHeader user={session?.user} role={dbUser?.role || "HOST"} />
 
       {/* Main Flex Layout */}
       <div className="mx-auto w-full max-w-6xl px-4 py-6 flex flex-col md:flex-row gap-6 flex-1">
-        {/* Floating Sidebar */}
-        <aside className="w-full md:w-[240px] md:shrink-0 md:sticky md:top-24 md:self-start">
+        {/* Sidebar */}
+        <aside className="w-full md:w-[240px] md:shrink-0">
           <div className="hand-border bg-white p-2">
             <p className="px-3 pt-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Host dashboard</p>
             <SidebarNav />
