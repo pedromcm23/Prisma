@@ -9,29 +9,36 @@ import { toggleBlockedDate, toggleSpontaneousDate } from "@/app/actions/availabi
 
 import { PropertySelector } from "../preview/property-selector";
 
-function getContiguousBlock(focusedIso: string, blockedDates: string[]): string[] {
-  if (!blockedDates.includes(focusedIso)) return [focusedIso];
+function getLargestContiguousBlock(blockedDates: string[]): string[] {
+  if (blockedDates.length === 0) return [];
   
-  const block = new Set<string>();
-  block.add(focusedIso);
+  const sorted = [...blockedDates].sort();
+  let maxBlock: string[] = [];
+  let currentBlock: string[] = [sorted[0]];
   
-  let current = new Date(focusedIso);
-  while (true) {
-    current = addDays(current, 1);
-    const isoStr = format(current, "yyyy-MM-dd");
-    if (blockedDates.includes(isoStr)) block.add(isoStr);
-    else break;
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = new Date(sorted[i - 1]);
+    const curr = new Date(sorted[i]);
+    
+    // Check if curr is exactly 1 day after prev
+    const nextDay = new Date(prev);
+    nextDay.setDate(nextDay.getDate() + 1);
+    
+    if (curr.toISOString().split('T')[0] === nextDay.toISOString().split('T')[0]) {
+      currentBlock.push(sorted[i]);
+    } else {
+      if (currentBlock.length > maxBlock.length) {
+        maxBlock = currentBlock;
+      }
+      currentBlock = [sorted[i]];
+    }
   }
   
-  current = new Date(focusedIso);
-  while (true) {
-    current = subDays(current, 1);
-    const isoStr = format(current, "yyyy-MM-dd");
-    if (blockedDates.includes(isoStr)) block.add(isoStr);
-    else break;
+  if (currentBlock.length > maxBlock.length) {
+    maxBlock = currentBlock;
   }
   
-  return Array.from(block).sort();
+  return maxBlock;
 }
 
 export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [], bookedDates = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[], bookedDates?: string[] }) {
@@ -160,13 +167,20 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
         </div>
 
         {focused && (() => {
-          const bundle = getContiguousBlock(focused, blockedDates);
+          let bundle = getLargestContiguousBlock(blockedDates);
+          if (bundle.length <= 1) {
+            bundle = [focused];
+          }
           const isBundleSpontaneous = bundle.every(k => spontaneousDates.includes(k));
+          
+          // Count only unbooked dates for the bundle display
+          const unbookedBundle = bundle.filter(d => !bookedDates.includes(d));
+          
           return (
             <div className="mt-4 p-4 rounded-xl border-2 border-dashed border-foreground/40 bg-mustard/20 flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
-                  {bundle.length > 1 ? `Bundle of ${bundle.length} nights` : "Focused date"}
+                  {bundle.length > 1 ? `Largest Bundle: ${bundle.length} nights` : "Focused date"}
                 </p>
                 <p className="font-display text-xl font-bold">
                   {bundle.length > 1 
@@ -175,7 +189,7 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {bundle.length > 1 
-                    ? "Uninterrupted blocked dates" 
+                    ? "Selected uninterrupted blocked dates" 
                     : blockedDates.includes(focused) ? "Blocked from bookings" : "Open for bookings"}
                 </p>
               </div>
