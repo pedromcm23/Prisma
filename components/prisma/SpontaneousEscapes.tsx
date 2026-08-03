@@ -30,7 +30,7 @@ export function SpontaneousEscapes({ stays = [], isAuthenticated, onAuthRequired
       <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
         {stays.map((s, i) => (
           <article
-            key={s.slug}
+            key={`${s.slug}-${s.startDate}`}
             className={cn(
               "polaroid text-left group transition-transform hover:-translate-y-1 block flex flex-col",
               i % 2 === 0 ? "rotate-[-1deg]" : "rotate-[1deg]"

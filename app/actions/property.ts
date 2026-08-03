@@ -67,20 +67,49 @@ export async function getSpontaneousProperties() {
       }
     });
 
-    // Deduplicate properties
-    const uniqueProps = new Map();
+    // Group by contiguous blocks per property
+    const propertyBlocks: any[] = [];
+    const propertyDatesMap = new Map<string, any[]>();
+    
     spontaneousDates.forEach(sd => {
-      if (!uniqueProps.has(sd.property.id)) {
-        uniqueProps.set(sd.property.id, { property: sd.property, firstDate: sd.date, lastDate: sd.date, dealPrice: sd.dealPrice });
-      } else {
-        const existing = uniqueProps.get(sd.property.id);
-        if (sd.date > existing.lastDate) {
-          existing.lastDate = sd.date;
-        }
+      if (!propertyDatesMap.has(sd.property.id)) {
+        propertyDatesMap.set(sd.property.id, []);
       }
+      propertyDatesMap.get(sd.property.id)!.push(sd);
     });
 
-    const results = Array.from(uniqueProps.values()).map(({ property: p, firstDate, lastDate, dealPrice: customDealPrice }) => {
+    propertyDatesMap.forEach((dates) => {
+      if (dates.length === 0) return;
+      
+      let currentBlock = {
+        property: dates[0].property,
+        firstDate: dates[0].date,
+        lastDate: dates[0].date,
+        dealPrice: dates[0].dealPrice
+      };
+      
+      for (let i = 1; i < dates.length; i++) {
+        const prevDate = new Date(dates[i - 1].date);
+        const currDate = new Date(dates[i].date);
+        const nextDay = new Date(prevDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        
+        if (currDate.toISOString().split('T')[0] === nextDay.toISOString().split('T')[0]) {
+          currentBlock.lastDate = currDate;
+        } else {
+          propertyBlocks.push(currentBlock);
+          currentBlock = {
+            property: dates[i].property,
+            firstDate: dates[i].date,
+            lastDate: dates[i].date,
+            dealPrice: dates[i].dealPrice
+          };
+        }
+      }
+      propertyBlocks.push(currentBlock);
+    });
+
+    const results = propertyBlocks.map(({ property: p, firstDate, lastDate, dealPrice: customDealPrice }) => {
       const json = p.landingPageJson as any;
       const image = json?.rooms?.[0]?.photos?.[0] || null;
       const slug = p.id;
