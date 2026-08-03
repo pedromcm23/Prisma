@@ -102,7 +102,11 @@ export default async function PublicPropertyPage(props: {
   let unavailableDates: string[] = [];
   try {
     const blocked = await prisma.blockedDate.findMany({
-      where: { propertyId: property.id, isBlocked: true },
+      where: { 
+        propertyId: property.id, 
+        isBlocked: true,
+        isSpontaneous: false 
+      },
       select: { date: true }
     });
     
@@ -122,17 +126,6 @@ export default async function PublicPropertyPage(props: {
     });
     
     unavailableDates = Array.from(unavailableSet);
-    
-    // If it's a Flash Deal, the deal dates shouldn't be blocked for the guest to book!
-    if (flashDealStart && flashDealEnd) {
-      let d = parseISO(flashDealStart);
-      const end = parseISO(flashDealEnd);
-      while (d <= end) {
-        const iso = d.toISOString().split('T')[0];
-        unavailableDates = unavailableDates.filter(u => u !== iso);
-        d.setDate(d.getDate() + 1);
-      }
-    }
   } catch (e) {
     console.error("Failed to fetch availability:", e);
   }
