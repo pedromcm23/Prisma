@@ -1,13 +1,38 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addMonths, subMonths, isBefore, startOfDay, addYears, isAfter } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, addMonths, subMonths, isBefore, startOfDay, addYears, isAfter, addDays, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toggleBlockedDate, toggleSpontaneousDate } from "@/app/actions/availability";
 
 import { PropertySelector } from "../preview/property-selector";
+
+function getContiguousBlock(focusedIso: string, blockedDates: string[]): string[] {
+  if (!blockedDates.includes(focusedIso)) return [focusedIso];
+  
+  const block = new Set<string>();
+  block.add(focusedIso);
+  
+  let current = new Date(focusedIso);
+  while (true) {
+    current = addDays(current, 1);
+    const isoStr = format(current, "yyyy-MM-dd");
+    if (blockedDates.includes(isoStr)) block.add(isoStr);
+    else break;
+  }
+  
+  current = new Date(focusedIso);
+  while (true) {
+    current = subDays(current, 1);
+    const isoStr = format(current, "yyyy-MM-dd");
+    if (blockedDates.includes(isoStr)) block.add(isoStr);
+    else break;
+  }
+  
+  return Array.from(block).sort();
+}
 
 export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [], bookedDates = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[], bookedDates?: string[] }) {
   const [blockedDates, setBlockedDates] = useState<string[]>(initialBlocked);
@@ -49,30 +74,23 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
     }
   };
 
-  const toggleSpontaneous = async (key: string) => {
+  const toggleSpontaneousBundle = async (bundleKeys: string[]) => {
     if (!activeId) return;
     
-    const wasSpontaneous = spontaneousDates.includes(key);
+    const isCurrentlySpontaneous = bundleKeys.every(key => spontaneousDates.includes(key));
     
     // Optimistic update
-    if (wasSpontaneous) {
-      setSpontaneousDates(prev => prev.filter(d => d !== key));
+    if (isCurrentlySpontaneous) {
+      setSpontaneousDates(prev => prev.filter(d => !bundleKeys.includes(d)));
     } else {
-      setSpontaneousDates(prev => [...prev, key]);
-      if (!blockedDates.includes(key)) {
-        setBlockedDates(prev => [...prev, key]);
-      }
+      setSpontaneousDates(prev => Array.from(new Set([...prev, ...bundleKeys])));
+      setBlockedDates(prev => Array.from(new Set([...prev, ...bundleKeys])));
     }
     
     try {
-      await toggleSpontaneousDate(activeId, new Date(key).toISOString());
+      await Promise.all(bundleKeys.map(key => toggleSpontaneousDate(activeId, new Date(key).toISOString())));
     } catch (e) {
-      // Revert on error
-      if (wasSpontaneous) {
-        setSpontaneousDates(prev => [...prev, key]);
-      } else {
-        setSpontaneousDates(prev => prev.filter(d => d !== key));
-      }
+      window.location.reload();
     }
   };
 
@@ -125,7 +143,7 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                 disabled={isDisabled || isBooked}
                 onClick={() => { toggleBlocked(key); setFocused(key); }}
                 className={cn(
-                  "relative aspect-square rounded-lg border-2 text-sm font-bold flex flex-col items-center justify-center transition-transform",
+                  "relative aspect-square rounded-lg border-2 text-sm font-bold flex flex-col items-center justify-center transition-transform overflow-hidden",
                   (isDisabled || isBooked) ? (isDisabled && !isBooked ? "cursor-not-allowed opacity-60" : "cursor-not-allowed") : "",
                   isBooked ? "bg-foreground text-cream border-foreground" :
                   blocked ? 
@@ -134,40 +152,52 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                   isToday && "border-4",
                 )}
               >
-                {format(d, "d")}
-                {spont && <Zap className="absolute top-0.5 right-0.5 w-3 h-3 text-mustard fill-mustard" />}
+                <span className="relative z-10">{format(d, "d")}</span>
+                {spont && <Zap className="absolute inset-0 m-auto w-3/4 h-3/4 text-mustard/30 fill-mustard/30 z-0" />}
               </button>
             );
           })}
         </div>
 
-        {focused && (
-          <div className="mt-4 p-4 rounded-xl border-2 border-dashed border-foreground/40 bg-mustard/20 flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Focused date</p>
-              <p className="font-display text-xl font-bold">{format(new Date(focused), "EEE, MMM d, yyyy")}</p>
-              <p className="text-xs text-muted-foreground">
-                {blockedDates.includes(focused) ? "Blocked from bookings" : "Open for bookings"}
-              </p>
+        {focused && (() => {
+          const bundle = getContiguousBlock(focused, blockedDates);
+          const isBundleSpontaneous = bundle.every(k => spontaneousDates.includes(k));
+          return (
+            <div className="mt-4 p-4 rounded-xl border-2 border-dashed border-foreground/40 bg-mustard/20 flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <p className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                  {bundle.length > 1 ? `Bundle of ${bundle.length} nights` : "Focused date"}
+                </p>
+                <p className="font-display text-xl font-bold">
+                  {bundle.length > 1 
+                    ? `${format(new Date(bundle[0]), "MMM d")} - ${format(new Date(bundle[bundle.length - 1]), "MMM d, yyyy")}`
+                    : format(new Date(focused), "EEE, MMM d, yyyy")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {bundle.length > 1 
+                    ? "Uninterrupted blocked dates" 
+                    : blockedDates.includes(focused) ? "Blocked from bookings" : "Open for bookings"}
+                </p>
+              </div>
+              <Button
+                onClick={() => toggleSpontaneousBundle(bundle)}
+                className={cn(
+                  "border-2 border-foreground shadow-hard-sm rounded-xl h-11 font-bold",
+                  isBundleSpontaneous ? "bg-primary text-primary-foreground" : "bg-cream hover:bg-mustard/30 text-foreground",
+                )}
+              >
+                <Zap className="w-4 h-4 mr-1" />
+                {isBundleSpontaneous ? "Listed on Flash Deals" : "List on Flash Deals"}
+              </Button>
             </div>
-            <Button
-              onClick={() => toggleSpontaneous(focused)}
-              className={cn(
-                "border-2 border-foreground shadow-hard-sm rounded-xl h-11 font-bold",
-                spontaneousDates.includes(focused) ? "bg-primary text-primary-foreground" : "bg-cream hover:bg-mustard/30 text-foreground",
-              )}
-            >
-              <Zap className="w-4 h-4 mr-1" />
-              {spontaneousDates.includes(focused) ? "Listed on Spontaneous Escapes" : "List on Spontaneous Escapes"}
-            </Button>
-          </div>
-        )}
+          );
+        })()}
 
         <div className="mt-4 flex flex-wrap gap-4 text-xs">
           <Legend swatch="bg-cream border-2 border-foreground" label="Open" />
           <Legend swatch="bg-primary border-2 border-foreground" label="Blocked" />
           <Legend swatch="bg-foreground border-2 border-foreground" label="Booked by Guest" />
-          <Legend swatch="bg-cream border-2 border-foreground" icon={<Zap className="w-3 h-3 fill-mustard text-mustard" />} label="Listed as Spontaneous Escape" />
+          <Legend swatch="bg-cream border-2 border-foreground" icon={<Zap className="w-3 h-3 fill-mustard text-mustard" />} label="Flash Deal" />
         </div>
       </div>
     </div>
