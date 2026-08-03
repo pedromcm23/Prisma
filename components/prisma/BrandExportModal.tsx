@@ -133,11 +133,13 @@ function polaroidReviewSvg(k: BrandKit, data: PropertyData) {
 
 function qrFlyerSvg(k: BrandKit, data: PropertyData, shareUrl: string) {
   const p = pair(k);
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&color=${encodeURIComponent(k.foreground.replace("#", ""))}&bgcolor=${encodeURIComponent(k.cream.replace("#", ""))}&data=${encodeURIComponent(shareUrl)}`;
+  const fg = k.foreground || "#2A211A";
+  const bg = k.cream || "#F7F3EB";
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&color=${encodeURIComponent(fg.replace("#", ""))}&bgcolor=${encodeURIComponent(bg.replace("#", ""))}&data=${encodeURIComponent(shareUrl)}`;
   // A5 at 300dpi ≈ 1748 x 2480
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1748" height="2480" viewBox="0 0 1748 2480">
-  <rect width="1748" height="2480" fill="${k.background}"/>
-  <rect x="60" y="60" width="1628" height="2360" fill="${k.cream}" stroke="${k.foreground}" stroke-width="10" rx="40"/>
+  <rect width="1748" height="2480" fill="${k.background || bg}"/>
+  <rect x="60" y="60" width="1628" height="2360" fill="${bg}" stroke="${fg}" stroke-width="10" rx="40"/>
 
   ${logoBadge(k, 874, 260, 110)}
 

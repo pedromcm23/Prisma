@@ -75,7 +75,7 @@ export function PreviewClient({ initialData, propertyId, initialBrandKit, hasNoP
       <div className="max-w-6xl mx-auto pb-12">
         <BoutiqueSite 
           data={data} 
-          initialBrandKit={initialBrandKit || {}}
+          initialBrandKit={initialBrandKit}
           setData={(newData) => {
             setData(newData);
             if (typeof window !== "undefined") {

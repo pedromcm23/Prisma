@@ -22,7 +22,7 @@ export function SidebarNav({ hasProperties }: { hasProperties?: boolean }) {
       {nav.map((item) => {
         const isActive = pathname === item.id || (item.id === '/host/preview' && pathname.startsWith('/stay/'));
         const Icon = item.icon;
-        const isDisabled = item.id === '/host/preview' && !hasProperties;
+        const isDisabled = item.id === '/host/preview' && (!hasProperties || pathname === '/host/builder');
 
         if (isDisabled) {
           return (
