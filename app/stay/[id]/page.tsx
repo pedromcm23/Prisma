@@ -112,10 +112,15 @@ export default async function PublicPropertyPage(props: {
   let unavailableDates: string[] = [];
   let flashDeals: any[] = [];
   try {
-    flashDeals = await prisma.blockedDate.findMany({
+    const rawFlashDeals = await prisma.blockedDate.findMany({
       where: { propertyId: property.id, isSpontaneous: true },
       select: { date: true, dealPrice: true }
     });
+    
+    flashDeals = rawFlashDeals.map(f => ({
+      date: f.date.toISOString(),
+      dealPrice: f.dealPrice
+    }));
 
     const blocked = await prisma.blockedDate.findMany({
       where: { 
