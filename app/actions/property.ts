@@ -29,7 +29,7 @@ export async function getProperties(options?: { take?: number }) {
         neighborhood: "City Center", // Placeholder since schema lacks neighborhood
         tagline: p.description?.substring(0, 50) || "A beautiful stay",
         price: json?.rooms?.[0]?.price ?? json?.basePrice ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.price ?? 150,
-        rating: 5.0, // Placeholder
+        rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? (4.7 + Math.random() * 0.3),
         hostName: p.host.name || "Unknown Host",
         tags: ["Cozy", "WiFi"], // Placeholder
         color: "from-primary to-mustard", // Placeholder
@@ -97,7 +97,7 @@ export async function getSpontaneousProperties() {
         price: price,
         originalPrice: price,
         dealPrice: dealPrice,
-        rating: 5.0,
+        rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? (4.7 + Math.random() * 0.3),
         hostName: p.host.name || "Unknown Host",
         tags: ["Cozy", "WiFi"],
         color: "from-primary to-mustard",
