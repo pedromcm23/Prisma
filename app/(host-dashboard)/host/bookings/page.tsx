@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CancelBookingButton } from "./CancelBookingButton";
 
 export default async function HostBookings() {
   const session = await auth();
@@ -56,7 +57,7 @@ export default async function HostBookings() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     {format(new Date(b.startDate), "MMM d")} → {format(new Date(b.endDate), "MMM d, yyyy")}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 flex items-center justify-between">
                     <span className={cn(
                       "inline-block rounded-full border-2 border-foreground px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider",
                       b.status === "CONFIRMED" && "bg-cream",
@@ -65,6 +66,7 @@ export default async function HostBookings() {
                     )}>
                       {b.status === "CONFIRMED" ? "COMPLETED" : b.status === "PENDING" ? "UPCOMING" : b.status}
                     </span>
+                    <CancelBookingButton bookingId={b.id} />
                   </td>
                   <td className="px-4 py-3 max-w-[280px]">
                     {(b as any).review ? (
