@@ -26,7 +26,7 @@ export default async function BuilderPage(props: {
       { text: "", author: "", rating: 5 },
     ];
     d.rooms = [
-      { name: "", price: 120, amenities: [], photos: [] }
+      { name: "", price: 0, amenities: [], photos: [] }
     ];
     return d;
   })();
