@@ -83,7 +83,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
   };
 
   return (
-    <div className="min-h-screen py-10 px-4 flex flex-col items-center">
+    <div className="w-full py-10 px-4 flex flex-col items-center">
       <div className="mb-8 text-center">
         <div className="inline-flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-primary border-2 border-foreground shadow-hard-sm flex items-center justify-center">
