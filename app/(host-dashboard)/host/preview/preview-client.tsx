@@ -6,6 +6,8 @@ import type { PropertyData } from "@/lib/prisma-types";
 import { useRouter } from "next/navigation";
 import { saveBoutiqueSite } from "@/app/actions/property";
 
+import { globalDraftStore } from "@/lib/store";
+
 export function PreviewClient({ initialData, propertyId }: { initialData: PropertyData, propertyId?: string }) {
   const [data, setData] = useState<PropertyData>(initialData);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -15,12 +17,16 @@ export function PreviewClient({ initialData, propertyId }: { initialData: Proper
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const draft = sessionStorage.getItem(draftKey);
-      if (draft) {
-        try {
-          setData(JSON.parse(draft));
-        } catch (e) {
-          console.error("Failed to parse draft", e);
+      if (globalDraftStore[draftKey]) {
+        setData(globalDraftStore[draftKey]);
+      } else {
+        const draft = sessionStorage.getItem(draftKey);
+        if (draft) {
+          try {
+            setData(JSON.parse(draft));
+          } catch (e) {
+            console.error("Failed to parse draft", e);
+          }
         }
       }
     }
@@ -47,7 +53,7 @@ export function PreviewClient({ initialData, propertyId }: { initialData: Proper
       setData={(newData) => {
         setData(newData);
         if (typeof window !== "undefined") {
-          sessionStorage.setItem(draftKey, JSON.stringify(newData));
+          globalDraftStore[draftKey] = newData;
         }
       }} 
       onBack={() => router.push(`/host/builder${propertyId ? `?id=${propertyId}` : ''}`)} 

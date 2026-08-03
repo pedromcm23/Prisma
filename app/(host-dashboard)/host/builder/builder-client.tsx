@@ -4,29 +4,27 @@ import { useState } from "react";
 import { OnboardingWizard } from "@/components/prisma/OnboardingWizard";
 import { type PropertyData } from "@/lib/prisma-types";
 import { useRouter } from "next/navigation";
+import { globalDraftStore } from "@/lib/store";
 
 export function BuilderClient({ initialData, propertyId }: { initialData: PropertyData, propertyId?: string }) {
   const router = useRouter();
   const [data, setData] = useState<PropertyData>(initialData);
 
   return (
-    <div>
-      <OnboardingWizard
-        data={data}
-        setData={setData}
-        onGenerate={() => {
-          if (typeof window !== "undefined") {
-            try {
-              sessionStorage.setItem(`prisma_draft_${propertyId || 'new'}`, JSON.stringify(data));
-            } catch (e) {
-              console.error("Storage error", e);
-              toast.error("Photos are too large to save. Try removing some.");
-              return;
+    <div className="w-full h-full min-h-screen bg-cream overflow-y-auto">
+      <div className="max-w-4xl mx-auto py-12">
+        <OnboardingWizard
+          data={data}
+          setData={setData}
+          onGenerate={() => {
+            if (typeof window !== "undefined") {
+              const key = `prisma_draft_${propertyId || 'new'}`;
+              globalDraftStore[key] = data;
             }
-          }
-          router.push(`/host/preview${propertyId ? `?id=${propertyId}` : ''}`);
-        }}
-      />
+            router.push(`/host/preview${propertyId ? `?id=${propertyId}` : ''}`);
+          }}
+        />
+      </div>
     </div>
   );
 }
