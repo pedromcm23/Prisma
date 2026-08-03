@@ -33,10 +33,10 @@ export default async function HostDashboardLayout({ children }: { children: Reac
       {/* Global Host Header */}
       <AppHeader user={session?.user} role={dbUser?.role || "HOST"} />
 
-      {/* Main Grid Layout */}
-      <div className="mx-auto w-full max-w-6xl px-4 py-6 grid md:grid-cols-[240px_1fr] gap-6 flex-1">
+      {/* Main Flex Layout */}
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 flex flex-col md:flex-row gap-6 flex-1">
         {/* Floating Sidebar */}
-        <aside className="md:sticky md:top-24 md:self-start">
+        <aside className="w-full md:w-[240px] md:shrink-0 md:sticky md:top-24 md:self-start">
           <div className="hand-border bg-white p-2">
             <p className="px-3 pt-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Host dashboard</p>
             <SidebarNav />
@@ -44,7 +44,7 @@ export default async function HostDashboardLayout({ children }: { children: Reac
         </aside>
 
         {/* Page Content */}
-        <main className="min-w-0">
+        <main className="min-w-0 flex-1">
           {children}
         </main>
       </div>
