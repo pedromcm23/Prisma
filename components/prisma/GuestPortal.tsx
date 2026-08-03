@@ -1,7 +1,14 @@
 "use client";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Map, LayoutGrid, Star, MapPin, Search, Sparkles, ArrowRight, Zap } from "lucide-react";
+import { Map, LayoutGrid, Star, Search, Sparkles, MapPin, Zap, ArrowRight, Home, Shield, Users, LogIn } from "lucide-react";
+import dynamic from "next/dynamic";
+import { X } from "lucide-react";
+
+const DynamicMap = dynamic(() => import("@/components/map-view"), { 
+  ssr: false,
+  loading: () => <div className="w-full aspect-[16/10] rounded-2xl border-2 border-foreground shadow-hard-lg bg-cream flex items-center justify-center animate-pulse" />
+});
 import { SAMPLE_LISTINGS, type Listing } from "@/lib/prisma-types";
 import { cn } from "@/lib/utils";
 import { SpontaneousEscapes } from "./SpontaneousEscapes";
@@ -226,42 +233,17 @@ function GridView({ listings, isAuthenticated, onAuthRequired }: { listings: Lis
 }
 
 function MapView({ listings, isAuthenticated, onAuthRequired }: { listings: Listing[], isAuthenticated: boolean, onAuthRequired: () => void }) {
+  const handleOpen = (l: Listing) => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+    } else {
+      window.open(`/stay/${l.slug}`, '_blank');
+    }
+  };
+
   return (
     <section className="pb-16">
-      <div className="relative w-full aspect-[16/10] rounded-2xl border-2 border-foreground shadow-hard-lg overflow-hidden bg-gradient-to-br from-ocean/20 via-cream to-mustard/30">
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: "linear-gradient(oklch(0.38 0.12 250 / 0.4) 1px, transparent 1px), linear-gradient(90deg, oklch(0.38 0.12 250 / 0.4) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }} />
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 62" preserveAspectRatio="none">
-          <path d="M0,20 Q15,10 30,22 T60,25 T100,18 L100,62 L0,62 Z" fill="oklch(0.83 0.16 88 / 0.35)" stroke="oklch(0.19 0.02 60)" strokeWidth="0.3" />
-        </svg>
-        {listings.map((l) => (
-          <Link 
-            href={`/stay/${l.slug}`} 
-            target="_blank" 
-            key={l.slug} 
-            className="absolute -translate-x-1/2 -translate-y-full group" 
-            style={{ left: `${l.lng}%`, top: `${l.lat}%` }}
-            onClick={(e) => {
-              if (!isAuthenticated) {
-                e.preventDefault();
-                onAuthRequired();
-              }
-            }}
-          >
-            <div className="relative flex flex-col items-center">
-              <div className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap group-hover:-translate-y-0.5 transition-transform">€{l.price}</div>
-              <div className="w-3 h-3 bg-primary border-2 border-foreground rotate-45 -mt-1.5" />
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-full mt-2 bg-cream border-2 border-foreground shadow-hard-sm rounded-lg overflow-hidden w-40 text-left">
-                <img src={l.image || ""} alt="" className="w-full h-20 object-cover border-b-2 border-foreground" />
-                <p className="px-2 py-1 text-xs font-bold">{l.name}</p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-      <p className="mt-4 text-sm text-muted-foreground text-center font-hand text-xl">tap a pin to open the stay's website ✿</p>
+      <DynamicMap listings={listings} onOpen={handleOpen} />
     </section>
   );
 }
