@@ -12,7 +12,6 @@ const containerStyle = {
 const mapOptions = {
   disableDefaultUI: true,
   zoomControl: true,
-  mapId: "prisma-map-id", // Needed for advanced styling if desired
   clickableIcons: false,
 };
 
