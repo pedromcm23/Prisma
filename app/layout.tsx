@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Caveat, Nunito } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const fraunces = Fraunces({ 
   subsets: ["latin"], 
@@ -36,6 +37,7 @@ export default function RootLayout({
         className={`${fraunces.variable} ${caveat.variable} ${nunito.variable} antialiased`}
       >
         {children}
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );

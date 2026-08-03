@@ -159,10 +159,13 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
 
       {/* Main Hero */}
       <section className="relative min-h-[80vh] flex flex-col justify-end">
-        <div 
-          className="absolute inset-0 -z-20 bg-cover bg-center"
-          style={{ backgroundImage: `url(${allPhotos[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop'})` }}
-        />
+        <div className="absolute inset-0 -z-20 overflow-hidden">
+          <img 
+            src={allPhotos[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop'} 
+            alt="Hero background" 
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         
         {/* Back to Prisma button */}
