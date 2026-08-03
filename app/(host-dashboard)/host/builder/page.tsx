@@ -56,8 +56,6 @@ export default async function BuilderPage(props: {
   }
 
   return (
-    <div className="p-10 font-bold text-xl">
-      Testing: If you can see this, the crash is in the form components.
-    </div>
+    <BuilderClient initialData={initialData} initialBrandKit={initialBrandKit} propertyId={propertyId} />
   );
 }
