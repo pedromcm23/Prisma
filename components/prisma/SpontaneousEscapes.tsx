@@ -58,7 +58,7 @@ export function SpontaneousEscapes({ stays = [], isAuthenticated, onAuthRequired
                   <Zap className="w-3 h-3" /> Available {s.window}
                 </div>
                 <div className="bg-white/90 border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-mustard" /> {s.rating}
+                  <Star className="w-3 h-3 fill-mustard" /> {Number(s.rating).toFixed(1)}
                 </div>
               </div>
 

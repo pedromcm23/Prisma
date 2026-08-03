@@ -41,9 +41,9 @@ export async function getProperties(options?: { take?: number }) {
           neighborhood: "City Center", // Placeholder since schema lacks neighborhood
           tagline: p.description?.substring(0, 50) || "A beautiful stay",
           price: displayPrice,
-        rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? (4.7 + Math.random() * 0.3),
-        hostName: p.host.name || "Unknown Host",
-        tags: ["Cozy", "WiFi"], // Placeholder
+          rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? json?.reviews?.[0]?.rating ?? [4.5, 4.6, 4.7, 4.8, 4.9, 5.0][p.name.length % 6],
+          hostName: p.host.name || "Unknown Host",
+        tags: SAMPLE_LISTINGS.find(s => s.name === p.name)?.tags ?? json?.rooms?.[0]?.amenities?.slice(0, 3) ?? ["Cozy", "Unique"],
         color: "from-primary to-mustard", // Placeholder
         image,
         lat: json?.lat ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lat ?? 38.7223,
@@ -156,9 +156,9 @@ export async function getSpontaneousProperties() {
         price: displayPrice,
         originalPrice: displayPrice,
         dealPrice: dealPrice,
-        rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? (4.7 + Math.random() * 0.3),
+        rating: SAMPLE_LISTINGS.find(s => s.name === p.name)?.rating ?? json?.reviews?.[0]?.rating ?? [4.5, 4.6, 4.7, 4.8, 4.9, 5.0][p.name.length % 6],
         hostName: p.host.name || "Unknown Host",
-        tags: ["Cozy", "WiFi"],
+        tags: SAMPLE_LISTINGS.find(s => s.name === p.name)?.tags ?? json?.rooms?.[0]?.amenities?.slice(0, 3) ?? ["Cozy", "Unique"],
         color: "from-primary to-mustard",
         image,
         lat: json?.lat ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lat ?? 38.7223,

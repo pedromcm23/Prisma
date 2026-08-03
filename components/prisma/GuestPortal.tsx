@@ -35,7 +35,8 @@ export function GuestPortal({ listings = SAMPLE_LISTINGS, flashDeals = [], isAut
     return (
       l.name.toLowerCase().includes(q) ||
       l.location.toLowerCase().includes(q) ||
-      l.tags.some((t) => t.toLowerCase().includes(q))
+      l.tags.some((t) => t.toLowerCase().includes(q)) ||
+      l.hostName.toLowerCase().includes(q)
     );
   });
 
@@ -197,7 +198,7 @@ function GridView({ listings, isAuthenticated, onAuthRequired }: { listings: Lis
               <div className="absolute inset-0 p-4 flex flex-col justify-between bg-gradient-to-b from-foreground/25 via-transparent to-foreground/30">
                 <div className="flex items-center justify-between">
                   <div className="bg-white/95 border-2 border-foreground rounded-full px-2 py-0.5 text-xs font-bold inline-flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-mustard" /> {l.rating}
+                    <Star className="w-3 h-3 fill-mustard" /> {Number(l.rating).toFixed(1)}
                   </div>
                   <div className="bg-foreground text-cream rounded-full px-2 py-0.5 text-xs font-bold">Host: {l.hostName}</div>
                 </div>
