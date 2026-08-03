@@ -291,12 +291,17 @@ export function HotelWebsite({
                   setError(null);
                   setIsBooking(true);
                   try {
-                    await createBooking(
+                    const res = await createBooking(
                       propertyId, 
                       format(dateRange.from, "yyyy-MM-dd"), 
                       format(dateRange.to, "yyyy-MM-dd"), 
                       total
                     );
+                    if (!res.success) {
+                      setError(res.error || "Failed to create reservation");
+                      setIsBooking(false);
+                      return;
+                    }
                     setBookingSuccess(true);
                   } catch (e: any) {
                     setError(e.message || "Failed to create reservation");

@@ -5,13 +5,13 @@ import { prisma } from "@/lib/prisma";
 
 export async function createBooking(propertyId: string, startDateIso: string, endDateIso: string, totalPrice: number) {
   const session = await auth();
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   const startDate = new Date(startDateIso);
   const endDate = new Date(endDateIso);
   
   if (startDate >= endDate) {
-    throw new Error("Invalid dates");
+    return { success: false, error: "Invalid dates" };
   }
 
   // Ensure dates are not blocked or already booked
@@ -27,7 +27,7 @@ export async function createBooking(propertyId: string, startDateIso: string, en
   });
 
   if (blocked) {
-    throw new Error("Some of these dates are not available.");
+    return { success: false, error: "Some of these dates are not available." };
   }
 
   // Check existing bookings overlap
@@ -43,7 +43,7 @@ export async function createBooking(propertyId: string, startDateIso: string, en
   });
 
   if (overlap) {
-    throw new Error("These dates are already booked.");
+    return { success: false, error: "These dates are already booked." };
   }
 
   // Ensure property exists in the database for the foreign key constraint
@@ -73,9 +73,9 @@ export async function createBooking(propertyId: string, startDateIso: string, en
         status: "CONFIRMED"
       }
     });
-    return booking;
+    return { success: true, booking };
   } catch (e: any) {
-    throw new Error(e.message || "Failed to create reservation in the database.");
+    return { success: false, error: "Failed to create reservation in the database." };
   }
 }
 
