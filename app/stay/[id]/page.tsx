@@ -60,6 +60,8 @@ export default async function PublicPropertyPage(props: {
         landingPageJson: {
           name: sample.name,
           location: sample.location,
+          lat: sample.lat,
+          lng: sample.lng,
           tagline: sample.tagline,
           hostName: sample.hostName,
           rooms: [{
