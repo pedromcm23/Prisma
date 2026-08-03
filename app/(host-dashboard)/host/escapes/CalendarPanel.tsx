@@ -5,7 +5,8 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay,
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { toggleBlockedDate, toggleSpontaneousDate } from "@/app/actions/availability";
+import { toggleBlockedDate, listFlashDealBundle, unlistFlashDealBundle } from "@/app/actions/availability";
+import { Input } from "@/components/ui/input";
 
 import { PropertySelector } from "../preview/property-selector";
 
@@ -45,6 +46,7 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
   const [blockedDates, setBlockedDates] = useState<string[]>(initialBlocked);
   const [spontaneousDates, setSpontaneousDates] = useState<string[]>(initialSpontaneous);
   const [cursor, setCursor] = useState(() => new Date());
+  const [dealPrice, setDealPrice] = useState<string>("");
 
   const days = useMemo(() => {
     const start = startOfMonth(cursor);
@@ -86,18 +88,29 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
     
     const isCurrentlySpontaneous = bundleKeys.every(key => spontaneousDates.includes(key));
     
-    // Optimistic update
     if (isCurrentlySpontaneous) {
+      // Unlist
       setSpontaneousDates(prev => prev.filter(d => !bundleKeys.includes(d)));
+      try {
+        await unlistFlashDealBundle(activeId, bundleKeys);
+      } catch (e) {
+        window.location.reload();
+      }
     } else {
+      // List
+      const price = parseFloat(dealPrice);
+      if (isNaN(price) || price <= 0) {
+        alert("Please enter a valid price per night for the Flash Deal.");
+        return;
+      }
       setSpontaneousDates(prev => Array.from(new Set([...prev, ...bundleKeys])));
       setBlockedDates(prev => Array.from(new Set([...prev, ...bundleKeys])));
-    }
-    
-    try {
-      await Promise.all(bundleKeys.map(key => toggleSpontaneousDate(activeId, new Date(key).toISOString())));
-    } catch (e) {
-      window.location.reload();
+      try {
+        await listFlashDealBundle(activeId, bundleKeys, price);
+        setDealPrice(""); // Reset after listing
+      } catch (e) {
+        window.location.reload();
+      }
     }
   };
 
@@ -193,16 +206,30 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
                     : blockedDates.includes(focused) ? "Blocked from bookings" : "Open for bookings"}
                 </p>
               </div>
-              <Button
-                onClick={() => toggleSpontaneousBundle(bundle)}
-                className={cn(
-                  "border-2 border-foreground shadow-hard-sm rounded-xl h-11 font-bold",
-                  isBundleSpontaneous ? "bg-primary text-primary-foreground" : "bg-cream hover:bg-mustard/30 text-foreground",
+              <div className="flex items-center gap-3">
+                {!isBundleSpontaneous && (
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">€</span>
+                    <Input
+                      type="number"
+                      placeholder="Price/night"
+                      value={dealPrice}
+                      onChange={(e) => setDealPrice(e.target.value)}
+                      className="w-32 pl-8 border-2 border-foreground shadow-hard-sm rounded-xl font-bold h-11"
+                    />
+                  </div>
                 )}
-              >
-                <Zap className="w-4 h-4 mr-1" />
-                {isBundleSpontaneous ? "Listed on Flash Deals" : "List on Flash Deals"}
-              </Button>
+                <Button
+                  onClick={() => toggleSpontaneousBundle(bundle)}
+                  className={cn(
+                    "border-2 border-foreground shadow-hard-sm rounded-xl h-11 font-bold",
+                    isBundleSpontaneous ? "bg-primary text-primary-foreground" : "bg-cream hover:bg-mustard/30 text-foreground",
+                  )}
+                >
+                  <Zap className="w-4 h-4 mr-1" />
+                  {isBundleSpontaneous ? "Remove Flash Deal" : "List on Flash Deals"}
+                </Button>
+              </div>
             </div>
           );
         })()}

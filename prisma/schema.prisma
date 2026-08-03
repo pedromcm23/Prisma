@@ -141,6 +141,7 @@ model BlockedDate {
   
   isBlocked     Boolean @default(true)
   isSpontaneous Boolean @default(false)
+  dealPrice     Float?
 
   @@unique([propertyId, date])
 }

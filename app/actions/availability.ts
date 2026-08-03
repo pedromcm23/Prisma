@@ -72,7 +72,8 @@ export async function toggleSpontaneousDate(propertyId: string, dateIso: string)
       where: { id: existing.id },
       data: { 
         isSpontaneous: !existing.isSpontaneous,
-        isBlocked: true // ensure it stays blocked if they list it as an escape
+        isBlocked: true, // ensure it stays blocked if they list it as an escape
+        dealPrice: !existing.isSpontaneous ? null : existing.dealPrice // reset price if turning off
       }
     });
   } else {
@@ -89,4 +90,77 @@ export async function toggleSpontaneousDate(propertyId: string, dateIso: string)
 
   revalidatePath("/host/escapes");
   revalidatePath(`/stay/[id]`, 'page');
+}
+
+export async function listFlashDealBundle(propertyId: string, bundleKeys: string[], dealPrice: number) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const property = await prisma.property.findFirst({
+    where: { id: propertyId, hostId: session.user.id }
+  });
+  if (!property) throw new Error("Property not found or unauthorized");
+
+  for (const dateIso of bundleKeys) {
+    const date = new Date(dateIso);
+    const existing = await prisma.blockedDate.findUnique({
+      where: { propertyId_date: { propertyId, date } }
+    });
+
+    if (existing) {
+      await prisma.blockedDate.update({
+        where: { id: existing.id },
+        data: {
+          isSpontaneous: true,
+          isBlocked: true,
+          dealPrice
+        }
+      });
+    } else {
+      await prisma.blockedDate.create({
+        data: {
+          propertyId,
+          date,
+          isBlocked: true,
+          isSpontaneous: true,
+          dealPrice
+        }
+      });
+    }
+  }
+
+  revalidatePath("/host/escapes");
+  revalidatePath(`/stay/[id]`, 'page');
+  revalidatePath("/");
+}
+
+export async function unlistFlashDealBundle(propertyId: string, bundleKeys: string[]) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const property = await prisma.property.findFirst({
+    where: { id: propertyId, hostId: session.user.id }
+  });
+  if (!property) throw new Error("Property not found or unauthorized");
+
+  for (const dateIso of bundleKeys) {
+    const date = new Date(dateIso);
+    const existing = await prisma.blockedDate.findUnique({
+      where: { propertyId_date: { propertyId, date } }
+    });
+
+    if (existing) {
+      await prisma.blockedDate.update({
+        where: { id: existing.id },
+        data: {
+          isSpontaneous: false,
+          dealPrice: null
+        }
+      });
+    }
+  }
+
+  revalidatePath("/host/escapes");
+  revalidatePath(`/stay/[id]`, 'page');
+  revalidatePath("/");
 }

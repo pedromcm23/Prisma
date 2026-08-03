@@ -145,9 +145,9 @@ export function SearchClient({ initialListings, user }: SearchClientProps) {
 
       {tab === "spontaneous" && (
         <div className="mx-auto max-w-6xl px-4 py-8">
-          <p className="font-hand text-3xl text-accent">last-minute love</p>
+          <p className="font-hand text-3xl text-accent">grab them before they're gone</p>
           <h1 className="text-4xl sm:text-5xl font-display font-extrabold mb-2">
-            Escape in the next 72 hours
+            Exclusive Flash Deals
           </h1>
           <SpontaneousEscapes listings={initialListings} />
         </div>

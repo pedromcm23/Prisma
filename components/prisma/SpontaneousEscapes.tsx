@@ -11,13 +11,13 @@ export function SpontaneousEscapes({ stays = [], isAuthenticated, onAuthRequired
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-foreground bg-cream px-3 py-1 shadow-hard-sm">
             <Zap className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs font-bold uppercase tracking-wider">Spontaneous escapes</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Flash Deals</span>
           </div>
           <h2 className="mt-2 text-3xl sm:text-4xl font-display font-extrabold leading-tight">
-            Free bed. Free hours. Go now.
+            Special bundles. Better prices.
           </h2>
           <p className="mt-2 text-sm max-w-xl">
-            Boutique stays with a room open in the next 72 hours. Book direct, save 20-35%,
+            Exclusive boutique stays with promotional prices for specific dates. Book direct, save on your whole stay,
             and the host throws in something extra as a welcome.
           </p>
         </div>
@@ -64,9 +64,6 @@ export function SpontaneousEscapes({ stays = [], isAuthenticated, onAuthRequired
 
               {/* Bottom overlay */}
               <div className="relative z-10 flex flex-col gap-2">
-                <div className="inline-flex self-start items-center gap-1 bg-foreground text-cream rounded-full px-2 py-0.5 text-xs font-bold">
-                  <Clock className="w-3 h-3" /> {s.hoursLeft}h left
-                </div>
                 <div className="flex flex-wrap gap-1">
                   {s.perks.map((p) => (
                     <span key={p} className="text-[10px] font-bold uppercase tracking-wider bg-white/90 border border-foreground rounded-full px-2 py-0.5">

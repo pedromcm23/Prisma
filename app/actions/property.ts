@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SAMPLE_LISTINGS } from "@/lib/prisma-types";
+import { format } from "date-fns";
 
 export async function getProperties(options?: { take?: number }) {
   try {
@@ -48,19 +49,15 @@ export async function getSpontaneousProperties() {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dayAfter = new Date(today);
-    dayAfter.setDate(dayAfter.getDate() + 2);
 
     const spontaneousDates = await prisma.blockedDate.findMany({
       where: {
         isSpontaneous: true,
         date: {
           gte: today,
-          lt: dayAfter
         }
       },
+      orderBy: { date: 'asc' },
       include: {
         property: {
           include: {
@@ -74,19 +71,23 @@ export async function getSpontaneousProperties() {
     const uniqueProps = new Map();
     spontaneousDates.forEach(sd => {
       if (!uniqueProps.has(sd.property.id)) {
-        uniqueProps.set(sd.property.id, { property: sd.property, firstDate: sd.date });
+        uniqueProps.set(sd.property.id, { property: sd.property, firstDate: sd.date, dealPrice: sd.dealPrice });
       }
     });
 
-    const results = Array.from(uniqueProps.values()).map(({ property: p, firstDate }) => {
+    const results = Array.from(uniqueProps.values()).map(({ property: p, firstDate, dealPrice: customDealPrice }) => {
       const json = p.landingPageJson as any;
       const image = json?.rooms?.[0]?.photos?.[0] || null;
       const slug = p.id;
       const price = json?.rooms?.[0]?.price || json?.basePrice || 150;
       const discount = 0.2;
-      const dealPrice = Math.round(price * (1 - discount));
+      const dealPrice = customDealPrice ?? Math.round(price * (1 - discount));
       const isToday = firstDate.getTime() === today.getTime();
-      const hoursLeft = isToday ? 24 - new Date().getHours() : 48 - new Date().getHours();
+      const isTomorrow = firstDate.getTime() === today.getTime() + 24 * 60 * 60 * 1000;
+      
+      let windowLabel = format(firstDate, "MMM d");
+      if (isToday) windowLabel = "Tonight";
+      else if (isTomorrow) windowLabel = "Tomorrow";
 
       return {
         slug: slug,
@@ -104,9 +105,9 @@ export async function getSpontaneousProperties() {
         image,
         lat: json?.lat ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lat ?? 38.7223,
         lng: json?.lng ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.lng ?? -9.1393,
-        hoursLeft,
-        perks: ["Free late checkout (2pm)", "Welcome drinks on the terrace"],
-        window: isToday ? "Tonight" : "Tomorrow",
+        hoursLeft: 24,
+        perks: ["Flash Deal Discount", "Exclusive Bundle"],
+        window: windowLabel,
       };
     });
 
