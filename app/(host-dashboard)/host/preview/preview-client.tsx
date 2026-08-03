@@ -29,7 +29,8 @@ export function PreviewClient({ initialData, propertyId, initialBrandKit, hasNoP
         const draft = sessionStorage.getItem(draftKey);
         if (draft) {
           try {
-            setData(JSON.parse(draft));
+            const parsed = JSON.parse(draft);
+            setData({ ...initialData, ...parsed });
             draftFound = true;
           } catch (e) {
             console.error("Failed to parse draft", e);
@@ -74,7 +75,7 @@ export function PreviewClient({ initialData, propertyId, initialBrandKit, hasNoP
       <div className="max-w-6xl mx-auto pb-12">
         <BoutiqueSite 
           data={data} 
-          brandKit={initialBrandKit || {}}
+          initialBrandKit={initialBrandKit || {}}
           setData={(newData) => {
             setData(newData);
             if (typeof window !== "undefined") {
