@@ -13,6 +13,7 @@ export function HotelWebsite({
   unavailableDates = [],
   flashDealStart,
   flashDealEnd,
+  flashDealPrice,
   flashDeals = []
 }: { 
   data: PropertyData, 
@@ -20,7 +21,8 @@ export function HotelWebsite({
   unavailableDates?: string[],
   flashDealStart?: string,
   flashDealEnd?: string,
-  flashDeals?: { date: Date, dealPrice: number | null }[]
+  flashDealPrice?: number,
+  flashDeals?: { date: string, dealPrice: number | null }[]
 }) {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -57,12 +59,17 @@ export function HotelWebsite({
       
       const flash = flashDeals.find(f => {
         const fd = new Date(f.date);
-        const flashStr = `${fd.getUTCFullYear()}-${String(fd.getUTCMonth() + 1).padStart(2, '0')}-${String(fd.getUTCDate()).padStart(2, '0')}`;
+      const flashStr = `${fd.getUTCFullYear()}-${String(fd.getUTCMonth() + 1).padStart(2, '0')}-${String(fd.getUTCDate()).padStart(2, '0')}`;
         return flashStr === localStr;
       });
       
+      const isWithinUrlFlashDeal = flashDealStart && flashDealEnd && flashDealPrice !== undefined && 
+        current >= parseISO(flashDealStart) && current < parseISO(flashDealEnd);
+      
       if (flash && flash.dealPrice) {
         total += flash.dealPrice;
+      } else if (isWithinUrlFlashDeal) {
+        total += flashDealPrice!;
       } else {
         const month = current.getMonth();
         const monthlyPrice = (data as any).monthlyPrices?.[month];

@@ -158,6 +158,7 @@ export default async function PublicPropertyPage(props: {
       unavailableDates={unavailableDates}
       flashDealStart={flashDealStart}
       flashDealEnd={flashDealEnd}
+      flashDealPrice={flashDealPrice}
       flashDeals={flashDeals}
     />
   );
