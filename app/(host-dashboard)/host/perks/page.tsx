@@ -9,11 +9,19 @@ export default async function GuestPerks() {
 
   if (!hostId) return null;
 
+  // Find properties owned by this host
+  const hostProperties = await prisma.property.findMany({
+    where: { hostId },
+    select: { id: true }
+  });
+  
+  const hostPropertyIds = hostProperties.map(p => p.id);
+
   // Find all social media transactions pending for properties owned by this host
   const pendingTransactions = await prisma.rewardTransaction.findMany({
     where: { 
       type: "SOCIAL",
-      property: { hostId }
+      propertyId: { in: hostPropertyIds }
     },
     include: {
       user: true,
