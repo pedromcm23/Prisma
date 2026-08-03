@@ -28,7 +28,7 @@ export async function getProperties(options?: { take?: number }) {
         location: p.description || "Unknown Location",
         neighborhood: "City Center", // Placeholder since schema lacks neighborhood
         tagline: p.description?.substring(0, 50) || "A beautiful stay",
-        price: 150, // Placeholder
+        price: json?.rooms?.[0]?.price ?? json?.basePrice ?? SAMPLE_LISTINGS.find(s => s.name === p.name)?.price ?? 150,
         rating: 5.0, // Placeholder
         hostName: p.host.name || "Unknown Host",
         tags: ["Cozy", "WiFi"], // Placeholder
