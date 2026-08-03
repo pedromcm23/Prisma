@@ -390,8 +390,8 @@ function RoomCard({
           className="border-2 border-foreground rounded-xl h-11 flex-1 min-w-[180px] bg-white" />
         <div className="relative w-32">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
-          <Input type="number" value={room.price}
-            onChange={(e) => onChange({ price: Number(e.target.value) })}
+          <Input type="number" value={room.price === 0 ? "" : room.price}
+            onChange={(e) => onChange({ price: e.target.value === "" ? 0 : Number(e.target.value) })}
             className="border-2 border-foreground rounded-xl h-11 pl-7 bg-white" />
         </div>
         {onRemove && (
