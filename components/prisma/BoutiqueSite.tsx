@@ -59,7 +59,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
     if (setData) setData({ ...data, [k]: v });
   };
 
-  const allPhotos = data.rooms?.flatMap((r) => r.photos).filter(Boolean) || [];
+  const allPhotos = (data.rooms || [])?.flatMap((r) => r.photos || []).filter(Boolean) || [];
   return (
     <div className="min-h-screen" style={brandKitCssVars(brandKit)}>
       {/* Sticky editor banner */}
@@ -213,7 +213,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
             </p>
             
             <div className="mt-16 grid sm:grid-cols-3 gap-8">
-              {data.specials.map((s, i) => (
+              {(data.specials || []).map((s, i) => (
                 <div key={i} className="border-t border-foreground/20 pt-4">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2">
                     Detail N°0{i + 1}
@@ -245,7 +245,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
             <h2 className="text-4xl sm:text-5xl font-display font-bold">Follow the crumbs</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6 relative">
-            {data.directions.map((d, i) => (
+            {(data.directions || []).map((d, i) => (
               <div key={i} className="relative">
                 <div className="bg-cream text-foreground hand-border p-6 relative">
                   <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-primary border-2 border-foreground shadow-hard-sm flex items-center justify-center text-primary-foreground font-display font-extrabold text-xl">
@@ -292,7 +292,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
           <h2 className="text-4xl sm:text-5xl font-display font-bold">Notes on the fridge</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-10">
-          {data.reviews.filter((r) => r.text.trim() || editing).map((r, i) => (
+          {(data.reviews || []).filter((r) => (r.text || "").trim() || editing).map((r, i) => (
             <div
               key={i}
               className={cn(
@@ -408,7 +408,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
           <div className="grid lg:grid-cols-2 gap-8 items-start">
             {/* Rooms */}
             <div className="space-y-4">
-              {data.rooms.map((r, i) => (
+              {(data.rooms || []).map((r, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedRoom(i)}
@@ -418,8 +418,8 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
                   )}
                 >
                   <div className="w-24 h-24 rounded-lg border-2 border-foreground overflow-hidden bg-gradient-to-br from-primary/40 to-accent/40 flex items-center justify-center shrink-0">
-                    {r.photos[0] ? (
-                      <img src={r.photos[0]} alt={r.name} className="w-full h-full object-cover" />
+                    {(r.photos || [])[0] ? (
+                      <img src={(r.photos || [])[0]} alt={r.name || ""} className="w-full h-full object-cover" />
                     ) : (
                       <Sun className="w-8 h-8 text-white" strokeWidth={1.5} />
                     )}
@@ -436,9 +436,9 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
                       as="h3"
                       className="text-xl font-display font-bold truncate"
                     />
-                    <p className="text-sm text-muted-foreground truncate">
-                      {r.amenities.length > 0 ? r.amenities.slice(0, 3).join(" · ") : "Sleeps 2 · Private bathroom"}
-                    </p>
+                    <p className="text-sm text-muted-foreground truncate mt-1">
+                    {(r.amenities || []).length > 0 ? (r.amenities || []).slice(0, 3).join(" · ") : "Sleeps 2 · Private bathroom"}
+                  </p>
                   </div>
 
                   <div className="text-right shrink-0">
@@ -469,7 +469,7 @@ export function BoutiqueSite({ data, setData, onBack, onPublish, isPublishing, r
             {/* Booking widget */}
             <div className="bg-card hand-border p-6 sticky top-24">
               <p className="font-hand text-2xl text-accent">your stay</p>
-              <p className="text-2xl font-display font-bold mb-4">{data.rooms[selectedRoom]?.name}</p>
+              <p className="text-2xl font-display font-bold mb-4">{(data.rooms || [])[selectedRoom]?.name}</p>
 
               <div className="grid grid-cols-2 gap-3">
                 <DatePickerField label="Check in" date={checkIn} onChange={setCheckIn} />

@@ -67,7 +67,7 @@ function logoBadge(k: BrandKit, cx: number, cy: number, r: number) {
 
 function instagramStorySvg(k: BrandKit, data: PropertyData, shareUrl: string) {
   const p = pair(k);
-  const specials = data.specials.filter(Boolean).slice(0, 3);
+  const specials = (data.specials || []).filter(Boolean).slice(0, 3);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
   <defs>
     <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
@@ -79,7 +79,7 @@ function instagramStorySvg(k: BrandKit, data: PropertyData, shareUrl: string) {
 
   <!-- top bar -->
   <rect x="60" y="80" width="960" height="120" rx="60" fill="${k.mustard}" stroke="${k.foreground}" stroke-width="6"/>
-  <text x="540" y="158" text-anchor="middle" font-family='${p.sans}' font-size="46" font-weight="800" fill="${k.foreground}" letter-spacing="4">✿ ${esc(data.location.toUpperCase())} ✿</text>
+  <text x="540" y="158" text-anchor="middle" font-family='${p.sans}' font-size="46" font-weight="800" fill="${k.foreground}" letter-spacing="4">✿ ${esc((data.location || "").toUpperCase())} ✿</text>
 
   ${logoBadge(k, 540, 360, 100)}
 
@@ -110,7 +110,7 @@ function instagramStorySvg(k: BrandKit, data: PropertyData, shareUrl: string) {
 
 function polaroidReviewSvg(k: BrandKit, data: PropertyData) {
   const p = pair(k);
-  const review = data.reviews.find((r) => r.text.trim()) ?? data.reviews[0];
+  const review = (data.reviews || []).find((r) => (r.text || "").trim()) ?? (data.reviews || [])[0];
   const lines = wrapWords(review?.text || "Loved every second.", 26);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
   <rect width="1080" height="1080" fill="${k.background}"/>
