@@ -109,8 +109,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["Terrace", "Breakfast", "Cats"],
     color: "from-primary to-mustard",
     image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop",
-    lat: 42,
-    lng: 28,
+    lat: 38.7126,
+    lng: -9.1306,
   },
   {
     slug: "olive-hill",
@@ -124,8 +124,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["Sea view", "Pool", "Bikes"],
     color: "from-accent to-ocean",
     image: "https://images.unsplash.com/photo-1515859005217-8a1f08870f59?q=80&w=1200&auto=format&fit=crop",
-    lat: 58,
-    lng: 62,
+    lat: 35.5138,
+    lng: 24.0180,
   },
   {
     slug: "casita-limon",
@@ -139,8 +139,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["Garden", "Sunset", "Art"],
     color: "from-mustard to-primary",
     image: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=1200&auto=format&fit=crop",
-    lat: 30,
-    lng: 45,
+    lat: 42.2888,
+    lng: 3.2770,
   },
   {
     slug: "riad-nour",
@@ -154,8 +154,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["Courtyard", "Hammam", "Rooftop"],
     color: "from-primary to-accent",
     image: "https://images.unsplash.com/photo-1539020140153-e479b8c22e70?q=80&w=1200&auto=format&fit=crop",
-    lat: 70,
-    lng: 20,
+    lat: 31.6295,
+    lng: -7.9811,
   },
   {
     slug: "villa-fiore",
@@ -168,8 +168,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     hostName: "Giulia",
     tags: ["Trullo", "Garden", "Wine"],
     color: "from-mustard to-accent",
-    lat: 50,
-    lng: 78,
+    lat: 40.7296,
+    lng: 17.5771,
   },
   {
     slug: "atelier-bleu",
@@ -182,8 +182,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     hostName: "Leila",
     tags: ["Ocean", "Art", "Terrace"],
     color: "from-accent to-primary",
-    lat: 78,
-    lng: 50,
+    lat: 31.5085,
+    lng: -9.7595,
   },
   {
     slug: "riad-yasmine",
@@ -197,8 +197,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["POOL", "MEDINA", "BREAKFAST"],
     color: "from-primary to-mustard",
     image: "https://images.unsplash.com/photo-1542314831-c6a4d1429d6d?q=80&w=1200&auto=format&fit=crop",
-    lat: 71,
-    lng: 22,
+    lat: 31.6360,
+    lng: -7.9860,
   },
   {
     slug: "masseria-moroseta",
@@ -212,8 +212,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["POOL", "FARM", "PUGLIA"],
     color: "from-mustard to-primary",
     image: "https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?q=80&w=1200&auto=format&fit=crop",
-    lat: 48,
-    lng: 76,
+    lat: 40.7300,
+    lng: 17.5800,
   },
   {
     slug: "the-slow",
@@ -227,8 +227,8 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["SURF", "ART", "TROPICAL"],
     color: "from-accent to-ocean",
     image: "https://images.unsplash.com/photo-1522792851823-3812f0afaf86?q=80&w=1200&auto=format&fit=crop",
-    lat: 80,
-    lng: 90,
+    lat: -8.6508,
+    lng: 115.1326,
   },
   {
     slug: "casa-cosmos",
@@ -242,7 +242,7 @@ export const SAMPLE_LISTINGS: Listing[] = [
     tags: ["BEACHFRONT", "NATURE", "ISOLATION"],
     color: "from-primary to-accent",
     image: "https://images.unsplash.com/photo-1501183638710-841dd1904471?q=80&w=1200&auto=format&fit=crop",
-    lat: 60,
-    lng: 10,
+    lat: 15.8694,
+    lng: -97.0722,
   }
 ];
