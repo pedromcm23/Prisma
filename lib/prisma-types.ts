@@ -28,8 +28,7 @@ export const emptyData = (): PropertyData => ({
   location: "",
   tagline: "",
   rooms: [
-    { name: "Garden Room", price: 120, amenities: ["Wi-Fi", "Terrace"], photos: [] },
-    { name: "Sea View Suite", price: 210, amenities: ["Wi-Fi", "Sea view", "Balcony"], photos: [] },
+    { name: "", price: 0, amenities: [], photos: [] },
   ],
   basePrice: 120,
   specials: ["", "", ""],
