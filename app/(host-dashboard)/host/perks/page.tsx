@@ -9,8 +9,15 @@ export default async function GuestPerks() {
 
   if (!hostId) return null;
 
-  const perks = await prisma.guestPerk.findMany({
-    where: { hostId },
+  // Find all social media transactions pending for properties owned by this host
+  const pendingTransactions = await prisma.rewardTransaction.findMany({
+    where: { 
+      type: "SOCIAL",
+      property: { hostId }
+    },
+    include: {
+      user: true,
+    },
     orderBy: { createdAt: "desc" }
   });
 
@@ -18,10 +25,10 @@ export default async function GuestPerks() {
     <div className="max-w-6xl mx-auto space-y-8">
       <div>
         <h1 className="text-4xl font-display font-extrabold tracking-tight">Guest Perks</h1>
-        <p className="text-muted-foreground mt-2 text-lg">Review and approve "Share the Love" submissions from your guests.</p>
+        <p className="text-muted-foreground mt-2 text-lg">Review and approve "Share the Love" submissions from your guests to award them 250 points.</p>
       </div>
 
-      {perks.length === 0 ? (
+      {pendingTransactions.length === 0 ? (
         <div className="bg-white border-2 border-foreground shadow-hard rounded-2xl p-12 text-center flex flex-col items-center">
           <div className="w-16 h-16 bg-mustard/30 border-2 border-foreground rounded-full flex items-center justify-center mb-4">
             <Gift className="w-8 h-8 text-primary" />
@@ -33,8 +40,8 @@ export default async function GuestPerks() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {perks.map((perk) => (
-            <PerkCard key={perk.id} perk={perk} />
+          {pendingTransactions.map((tx) => (
+            <PerkCard key={tx.id} transaction={tx} />
           ))}
         </div>
       )}

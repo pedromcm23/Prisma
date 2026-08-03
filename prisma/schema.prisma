@@ -24,8 +24,11 @@ model User {
   sessions      Session[]
   properties    Property[]     // For Hosts
   bookings      Booking[]      // For Customers
-  rewardPoints  RewardPoint[]  // For Customers
+  transactions  RewardTransaction[] // For Customers
   guestPerks    GuestPerk[]    // For Hosts
+  
+  referralCode  String?        @unique
+  referredById  String?
   
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -102,15 +105,17 @@ model Booking {
   updatedAt     DateTime       @updatedAt
 }
 
-model RewardPoint {
+model RewardTransaction {
   id            String         @id @default(cuid())
-  customerId    String
-  customer      User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  postLink      String
-  followerCount Int            @default(0)
-  pointsAwarded Int            @default(0)
+  points        Int
+  type          String         // e.g., "STAY", "SOCIAL", "REFERRAL", "REDEEM"
   status        String         @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  note          String?        @db.Text // e.g. Instagram URL, or Booking ID
+  propertyId    String?        // Used if host needs to approve (e.g. social media post for specific property)
   
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
