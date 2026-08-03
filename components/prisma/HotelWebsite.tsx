@@ -49,8 +49,13 @@ export function HotelWebsite({
   if (dateRange?.from && dateRange?.to) {
     let current = new Date(dateRange.from);
     while (current < dateRange.to) {
-      const iso = current.toISOString().split('T')[0];
-      const flash = flashDeals.find(f => new Date(f.date).toISOString().split('T')[0] === iso);
+      const localStr = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+      
+      const flash = flashDeals.find(f => {
+        const fd = new Date(f.date);
+        const flashStr = `${fd.getUTCFullYear()}-${String(fd.getUTCMonth() + 1).padStart(2, '0')}-${String(fd.getUTCDate()).padStart(2, '0')}`;
+        return flashStr === localStr;
+      });
       
       if (flash && flash.dealPrice) {
         total += flash.dealPrice;
