@@ -48,18 +48,23 @@ export function PreviewClient({ initialData, propertyId }: { initialData: Proper
   };
 
   return (
-    <BoutiqueSite 
-      data={data} 
-      setData={(newData) => {
-        setData(newData);
-        if (typeof window !== "undefined") {
-          globalDraftStore[draftKey] = newData;
-        }
-      }} 
-      onBack={() => router.push(`/host/builder${propertyId ? `?id=${propertyId}` : ''}`)} 
-      onPublish={handlePublish} 
-      isPublishing={isPublishing} 
-      readOnly={false}
-    />
+    <div className="w-full">
+      <div className="max-w-6xl mx-auto pb-12">
+        <BoutiqueSite 
+          data={data} 
+          brandKit={brandKit} 
+          setData={(newData) => {
+            setData(newData);
+            if (typeof window !== "undefined") {
+              globalDraftStore[draftKey] = newData;
+            }
+          }} 
+          onBack={() => router.push(`/host/builder${propertyId ? `?id=${propertyId}` : ''}`)} 
+          onPublish={handlePublish} 
+          isPublishing={isPublishing} 
+          readOnly={false}
+        />
+      </div>
+    </div>
   );
 }

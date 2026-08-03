@@ -11,8 +11,8 @@ export function BuilderClient({ initialData, propertyId }: { initialData: Proper
   const [data, setData] = useState<PropertyData>(initialData);
 
   return (
-    <div className="w-full h-full min-h-screen bg-cream overflow-y-auto">
-      <div className="max-w-4xl mx-auto py-12">
+    <div className="w-full">
+      <div className="max-w-4xl mx-auto pb-12">
         <OnboardingWizard
           data={data}
           setData={setData}
