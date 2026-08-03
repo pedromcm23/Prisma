@@ -19,6 +19,7 @@ export async function createBooking(propertyId: string, startDateIso: string, en
     where: {
       propertyId,
       isBlocked: true,
+      isSpontaneous: false,
       date: {
         gte: startDate,
         lt: endDate
