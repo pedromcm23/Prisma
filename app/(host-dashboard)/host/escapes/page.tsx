@@ -16,7 +16,7 @@ export default async function FlashDeals(props: {
   const properties = await prisma.property.findMany({
     where: { hostId },
     orderBy: { createdAt: 'desc' },
-    select: { id: true, name: true }
+    select: { id: true, name: true, landingPageJson: true }
   });
 
   let activeId = properties[0]?.id;
@@ -47,6 +47,15 @@ export default async function FlashDeals(props: {
     });
   }
 
+  const activeProperty = properties.find(p => p.id === activeId);
+  let monthlyPrices: Record<string, number> = {};
+  if (activeProperty?.landingPageJson) {
+    const json = activeProperty.landingPageJson as any;
+    if (json.monthlyPrices) {
+      monthlyPrices = json.monthlyPrices;
+    }
+  }
+
   return (
     <div>
       <CalendarPanel 
@@ -56,6 +65,7 @@ export default async function FlashDeals(props: {
         initialBlocked={initialBlocked}
         initialSpontaneous={initialSpontaneous}
         bookedDates={bookedDates}
+        initialMonthlyPrices={monthlyPrices}
       />
     </div>
   );

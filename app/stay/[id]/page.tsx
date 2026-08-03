@@ -98,9 +98,15 @@ export default async function PublicPropertyPage(props: {
     data.rooms = [{ name: "Standard Room", price: 100, amenities: [], photos: [] }];
   }
 
-  // Fetch unavailable dates (blocked by host or already booked)
+  // Fetch unavailable dates and flash deals
   let unavailableDates: string[] = [];
+  let flashDeals: any[] = [];
   try {
+    flashDeals = await prisma.blockedDate.findMany({
+      where: { propertyId: property.id, isSpontaneous: true },
+      select: { date: true, dealPrice: true }
+    });
+
     const blocked = await prisma.blockedDate.findMany({
       where: { 
         propertyId: property.id, 
@@ -137,7 +143,7 @@ export default async function PublicPropertyPage(props: {
       unavailableDates={unavailableDates}
       flashDealStart={flashDealStart}
       flashDealEnd={flashDealEnd}
-      flashDealPrice={flashDealPrice}
+      flashDeals={flashDeals}
     />
   );
 }

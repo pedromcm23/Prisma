@@ -12,14 +12,14 @@ export function HotelWebsite({
   unavailableDates = [],
   flashDealStart,
   flashDealEnd,
-  flashDealPrice
+  flashDeals = []
 }: { 
   data: PropertyData, 
   propertyId: string, 
   unavailableDates?: string[],
   flashDealStart?: string,
   flashDealEnd?: string,
-  flashDealPrice?: number
+  flashDeals?: { date: Date, dealPrice: number | null }[]
 }) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     if (flashDealStart && flashDealEnd) {
@@ -40,10 +40,28 @@ export function HotelWebsite({
   const rooms = data.rooms && data.rooms.length > 0 ? data.rooms : [
     { name: "Signature Room", price: data.basePrice || 150, amenities: ["WiFi", "AC"], photos: [] }
   ];
-  const selectedRoomPrice = flashDealPrice || (rooms[room]?.price || data.basePrice || 150);
+  const baseRoomPrice = rooms[room]?.price || data.basePrice || 150;
   
   const nights = dateRange?.from && dateRange?.to ? Math.max(1, differenceInDays(dateRange.to, dateRange.from)) : 0;
-  const total = selectedRoomPrice * nights;
+  
+  // Calculate total dynamically day-by-day
+  let total = 0;
+  if (dateRange?.from && dateRange?.to) {
+    let current = new Date(dateRange.from);
+    while (current < dateRange.to) {
+      const iso = current.toISOString().split('T')[0];
+      const flash = flashDeals.find(f => new Date(f.date).toISOString().split('T')[0] === iso);
+      
+      if (flash && flash.dealPrice) {
+        total += flash.dealPrice;
+      } else {
+        const month = current.getMonth();
+        const monthlyPrice = (data as any).monthlyPrices?.[month];
+        total += monthlyPrice ?? baseRoomPrice;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+  }
   
   const allPhotos = data.rooms?.flatMap((r) => r.photos).filter(Boolean) || [];
   const heroImage = allPhotos[0] || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2000&auto=format&fit=crop";
@@ -201,7 +219,9 @@ export function HotelWebsite({
           <div className="p-8">
             <div className="flex items-center justify-between" style={{ borderBottom: "1px solid var(--hw-line)", paddingBottom: 16 }}>
               <span className="text-sm">{rooms[room]?.name}</span>
-              <span className="text-sm">€{selectedRoomPrice} / night</span>
+              <span className="text-sm">
+                {nights > 0 ? `€${Math.round(total / nights)} / night avg.` : `From €${baseRoomPrice} / night`}
+              </span>
             </div>
             <div className="py-6 border-b" style={{ borderColor: "var(--hw-line)" }}>
               <span className="text-[11px] uppercase tracking-[0.24em] mb-4 block" style={{ color: "var(--hw-muted)" }}>Select Dates</span>

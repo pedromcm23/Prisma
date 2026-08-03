@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toggleBlockedDate, listFlashDealBundle, unlistFlashDealBundle } from "@/app/actions/availability";
+import { updateMonthlyPricing } from "@/app/actions/property";
 import { Input } from "@/components/ui/input";
 
 import { PropertySelector } from "../preview/property-selector";
@@ -35,11 +36,28 @@ function getContiguousBlockForDate(blockedDates: string[], targetDate: string): 
   return blocks.find(b => b.includes(targetDate)) || [targetDate];
 }
 
-export function CalendarPanel({ properties = [], activeId, initialBlocked = [], initialSpontaneous = [], bookedDates = [] }: { properties?: { id: string, name: string }[], activeId?: string, initialBlocked?: string[], initialSpontaneous?: string[], bookedDates?: string[] }) {
+export function CalendarPanel({ 
+  properties = [], 
+  activeId, 
+  initialBlocked = [], 
+  initialSpontaneous = [], 
+  bookedDates = [],
+  initialMonthlyPrices = {}
+}: { 
+  properties?: { id: string, name: string }[], 
+  activeId?: string, 
+  initialBlocked?: string[], 
+  initialSpontaneous?: string[], 
+  bookedDates?: string[],
+  initialMonthlyPrices?: Record<string, number>
+}) {
   const [blockedDates, setBlockedDates] = useState<string[]>(initialBlocked);
   const [spontaneousDates, setSpontaneousDates] = useState<string[]>(initialSpontaneous);
   const [cursor, setCursor] = useState(() => new Date());
   const [dealPrice, setDealPrice] = useState<string>("");
+  
+  const [monthlyPrices, setMonthlyPrices] = useState<Record<string, number>>(initialMonthlyPrices);
+  const [isSavingPrices, setIsSavingPrices] = useState(false);
 
   const days = useMemo(() => {
     const start = startOfMonth(cursor);
@@ -232,6 +250,50 @@ export function CalendarPanel({ properties = [], activeId, initialBlocked = [], 
           <Legend swatch="bg-primary border-2 border-foreground" label="Blocked" />
           <Legend swatch="bg-foreground border-2 border-foreground" label="Booked by Guest" />
           <Legend swatch="bg-cream border-2 border-foreground" icon={<Zap className="w-3 h-3 fill-mustard text-mustard" />} label="Flash Deal" />
+        </div>
+
+        {/* Monthly Pricing Grid */}
+        <div className="mt-10 pt-8 border-t-2 border-foreground/10">
+          <h3 className="font-display text-2xl font-extrabold mb-2">Base Pricing by Month</h3>
+          <p className="text-sm text-muted-foreground mb-6">
+            Set the default price per night for each month. This will be automatically applied to any guest reservations.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((month, i) => (
+              <div key={month} className="flex flex-col gap-1">
+                <label className="text-xs uppercase tracking-wider font-bold text-muted-foreground">{month}</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">€</span>
+                  <Input 
+                    type="number" 
+                    value={monthlyPrices[i] || ""} 
+                    onChange={(e) => setMonthlyPrices(prev => ({ ...prev, [i]: parseFloat(e.target.value) || 0 }))}
+                    className="w-full pl-8 border-2 border-foreground shadow-hard-sm rounded-xl font-bold h-11"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex justify-end">
+            <Button 
+              onClick={async () => {
+                if (!activeId) return;
+                setIsSavingPrices(true);
+                try {
+                  await updateMonthlyPricing(activeId, monthlyPrices);
+                  alert("Monthly prices saved successfully!");
+                } catch (e) {
+                  alert("Failed to save prices.");
+                } finally {
+                  setIsSavingPrices(false);
+                }
+              }}
+              disabled={isSavingPrices}
+              className="bg-primary text-primary-foreground border-2 border-foreground shadow-hard rounded-xl h-11 font-bold px-8 hover:bg-primary/90"
+            >
+              {isSavingPrices ? "Saving..." : "Save Prices"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

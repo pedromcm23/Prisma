@@ -158,6 +158,29 @@ export async function getSpontaneousProperties() {
   }
 }
 
+export async function updateMonthlyPricing(propertyId: string, monthlyPrices: Record<string, number>) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId }
+  });
+  
+  if (!property || property.hostId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+  
+  const json = property.landingPageJson as any || {};
+  json.monthlyPrices = monthlyPrices;
+  
+  await prisma.property.update({
+    where: { id: propertyId },
+    data: { landingPageJson: json }
+  });
+  
+  return true;
+}
+
 export async function createProperty(name: string, description: string) {
   // In a real app we'd get hostId from session
   // For now we assume a dummy or find first user
