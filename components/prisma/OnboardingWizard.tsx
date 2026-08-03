@@ -73,7 +73,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
         });
         toast.success("✨ Tagline and specials generated!");
       } else {
-        toast.error("Failed to generate copy");
+        toast.error(res.error || "Failed to generate copy");
       }
     } catch (e) {
       toast.error("An error occurred");
@@ -340,8 +340,8 @@ function RoomCard({
         const img = new window.Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 1200;
-          const MAX_HEIGHT = 1200;
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
           let width = img.width;
           let height = img.height;
 
@@ -362,7 +362,7 @@ function RoomCard({
           const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
-            const compressedUrl = canvas.toDataURL("image/jpeg", 0.7);
+            const compressedUrl = canvas.toDataURL("image/jpeg", 0.5);
             onChange({ photos: [...room.photos, compressedUrl].slice(0, 6) });
           } else {
             onChange({ photos: [...room.photos, url].slice(0, 6) });

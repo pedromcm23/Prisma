@@ -24,8 +24,8 @@ Location: ${location || "Unknown Location"}`,
     });
 
     return { success: true, data: object };
-  } catch (error) {
+    } catch (error: any) {
     console.error("AI Generation Error:", error);
-    return { success: false, error: "Failed to generate copy" };
+    return { success: false, error: error.message || "Failed to generate copy" };
   }
 }

@@ -16,7 +16,13 @@ export function BuilderClient({ initialData, propertyId }: { initialData: Proper
         setData={setData}
         onGenerate={() => {
           if (typeof window !== "undefined") {
-            sessionStorage.setItem(`prisma_draft_${propertyId || 'new'}`, JSON.stringify(data));
+            try {
+              sessionStorage.setItem(`prisma_draft_${propertyId || 'new'}`, JSON.stringify(data));
+            } catch (e) {
+              console.error("Storage error", e);
+              toast.error("Photos are too large to save. Try removing some.");
+              return;
+            }
           }
           router.push(`/host/preview${propertyId ? `?id=${propertyId}` : ''}`);
         }}
