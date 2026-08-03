@@ -47,7 +47,7 @@ export default async function HostProperties() {
         </Link>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-4">
         {properties.length === 0 && (
           <div className="col-span-2 p-8 text-center text-muted-foreground border-2 border-dashed border-foreground/20 rounded-xl">
             You haven't added any properties yet.

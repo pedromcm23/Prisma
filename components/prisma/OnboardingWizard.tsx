@@ -127,14 +127,14 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
 
         {step === 1 && (
           <div className="space-y-5">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
                 <Label htmlFor="name">Property name</Label>
                 <Input id="name" value={data.name} onChange={(e) => update("name", e.target.value)}
                   placeholder="e.g. Casa Amarela"
                   className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12" />
               </div>
-              <div>
+              <div className="flex-1">
                 <Label htmlFor="loc">Location</Label>
                 <Input id="loc" value={data.location} onChange={(e) => update("location", e.target.value)}
                   placeholder="e.g. Alfama, Lisbon"
