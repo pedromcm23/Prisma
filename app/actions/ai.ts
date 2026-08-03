@@ -1,13 +1,13 @@
 "use server";
 
 import { generateObject } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
 export async function generatePropertyCopy(name: string, location: string) {
   try {
     const { object } = await generateObject({
-      model: openai("gpt-4o-mini"),
+      model: google("gemini-1.5-flash"),
       system: `You are an expert luxury hospitality copywriter. You write in English.
 Your goal is to help a host create a beautiful, high-converting direct-booking website.
 Given the property's name and location, deduce its likely ambiance and generate:

@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/pedromcm23/Prisma#readme",
   "dependencies": {
+    "@ai-sdk/google": "^4.0.31",
     "@ai-sdk/openai": "^4.0.27",
     "@auth/prisma-adapter": "^2.11.3",
     "@prisma/adapter-pg": "^7.9.0",
