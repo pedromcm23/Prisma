@@ -131,13 +131,13 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
               <div>
                 <Label htmlFor="name">Property name</Label>
                 <Input id="name" value={data.name} onChange={(e) => update("name", e.target.value)}
-                  placeholder="Casa Amarela"
+                  placeholder="e.g. Casa Amarela"
                   className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12" />
               </div>
               <div>
                 <Label htmlFor="loc">Location</Label>
                 <Input id="loc" value={data.location} onChange={(e) => update("location", e.target.value)}
-                  placeholder="Alfama, Lisbon"
+                  placeholder="e.g. Alfama, Lisbon"
                   className="mt-1.5 border-2 border-foreground shadow-hard-sm rounded-xl h-12" />
               </div>
             </div>
