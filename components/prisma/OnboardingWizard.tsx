@@ -59,7 +59,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
 
   const handleMagicWrite = async () => {
     if (!data.name || !data.location) {
-      toast.error("Please enter a name and location first");
+      toast.error("Por favor preenche o Nome e a Localização primeiro!");
       return;
     }
     setIsGeneratingAI(true);
@@ -144,7 +144,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
             <div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="tag">Short tagline (optional)</Label>
-                <Button type="button" size="sm" variant="ghost" onClick={handleMagicWrite} disabled={isGeneratingAI || !data.name || !data.location} className="h-7 px-2 text-accent hover:text-accent/80 hover:bg-accent/10">
+                <Button type="button" size="sm" variant="ghost" onClick={handleMagicWrite} disabled={isGeneratingAI} className="h-7 px-2 text-accent hover:text-accent/80 hover:bg-accent/10">
                   <Sparkles className="w-3 h-3 mr-1" /> {isGeneratingAI ? "Writing..." : "Magic Write"}
                 </Button>
               </div>
@@ -184,7 +184,7 @@ export function OnboardingWizard({ data, setData, onGenerate }: Props) {
               <p className="text-muted-foreground">
                 Three tiny, specific things that make guests fall in love. Sensory & concrete always beats generic.
               </p>
-              <Button type="button" size="sm" variant="ghost" onClick={handleMagicWrite} disabled={isGeneratingAI || !data.name || !data.location} className="h-7 px-2 text-accent hover:text-accent/80 hover:bg-accent/10 shrink-0">
+              <Button type="button" size="sm" variant="ghost" onClick={handleMagicWrite} disabled={isGeneratingAI} className="h-7 px-2 text-accent hover:text-accent/80 hover:bg-accent/10 shrink-0">
                 <Sparkles className="w-3 h-3 mr-1" /> {isGeneratingAI ? "Writing..." : "Auto-Fill"}
               </Button>
             </div>
