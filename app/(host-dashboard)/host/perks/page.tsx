@@ -56,10 +56,10 @@ export default async function SocialRewards() {
         <div>
           <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Impact Analytics (This Month)</p>
           <p className="font-bold text-lg leading-tight">
-            Aprovaste {approvedCount} {approvedCount === 1 ? 'post' : 'posts'}.
+            You've approved {approvedCount} {approvedCount === 1 ? 'post' : 'posts'}.
           </p>
           <p className="text-sm text-foreground mt-1">
-            Isso significa que a tua propriedade chegou organicamente a potenciais <span className="font-extrabold text-primary">{potentialReach.toLocaleString()} pessoas</span> nas redes sociais a custo zero!
+            This means your property has organically reached a potential <span className="font-extrabold text-primary">{potentialReach.toLocaleString()} people</span> on social media at zero cost!
           </p>
         </div>
         <div className="hidden sm:flex w-12 h-12 bg-white border-2 border-foreground rounded-full items-center justify-center shrink-0">
