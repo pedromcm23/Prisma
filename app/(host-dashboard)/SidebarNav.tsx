@@ -14,7 +14,7 @@ export function SidebarNav({ hasProperties }: { hasProperties?: boolean }) {
     { id: "/host/bookings", label: "Booking History", icon: BookOpen },
     { id: "/host/escapes", label: "Calendar & Flash Deals", icon: CalendarDays },
     { id: "/host/properties", label: "Property Management", icon: Home },
-    { id: "/host/perks", label: "Guest Perks", icon: Heart },
+    { id: "/host/perks", label: "Social Rewards", icon: Heart },
   ];
 
   return (

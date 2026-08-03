@@ -1,9 +1,10 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { PerkCard } from "./PerkCard";
-import { Gift } from "lucide-react";
+import { Gift, TrendingUp } from "lucide-react";
+import { startOfMonth } from "date-fns";
 
-export default async function GuestPerks() {
+export default async function SocialRewards() {
   const session = await auth();
   const hostId = session?.user?.id;
 
@@ -29,11 +30,41 @@ export default async function GuestPerks() {
     orderBy: { createdAt: "desc" }
   });
 
+  // ROI Tracker Calculations
+  const monthStart = startOfMonth(new Date());
+  const approvedCount = await prisma.rewardTransaction.count({
+    where: {
+      type: "SOCIAL",
+      status: "APPROVED",
+      propertyId: { in: hostPropertyIds },
+      updatedAt: { gte: monthStart }
+    }
+  });
+  
+  // Assume an average of 2,000 followers/reach per social media post
+  const assumedReachPerPost = 2000;
+  const potentialReach = approvedCount * assumedReachPerPost;
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div>
-        <h1 className="text-4xl font-display font-extrabold tracking-tight">Guest Perks</h1>
+        <h1 className="text-4xl font-display font-extrabold tracking-tight">Social Rewards</h1>
         <p className="text-muted-foreground mt-2 text-lg">Review and approve "Share the Love" submissions from your guests to award them 250 points.</p>
+      </div>
+
+      <div className="bg-mustard/20 border-2 border-foreground shadow-hard-sm rounded-xl p-5 flex items-center justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Impact Analytics (This Month)</p>
+          <p className="font-bold text-lg leading-tight">
+            Aprovaste {approvedCount} {approvedCount === 1 ? 'post' : 'posts'}.
+          </p>
+          <p className="text-sm text-foreground mt-1">
+            Isso significa que a tua propriedade chegou organicamente a potenciais <span className="font-extrabold text-primary">{potentialReach.toLocaleString()} pessoas</span> nas redes sociais a custo zero!
+          </p>
+        </div>
+        <div className="hidden sm:flex w-12 h-12 bg-white border-2 border-foreground rounded-full items-center justify-center shrink-0">
+          <TrendingUp className="w-5 h-5 text-primary" />
+        </div>
       </div>
 
       {pendingTransactions.length === 0 ? (
