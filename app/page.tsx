@@ -19,7 +19,7 @@ export default async function Landing() {
   }
 
   if (role === "HOST") {
-    redirect("/host/dashboard");
+    redirect("/host/properties");
   }
 
   let dbListings = SAMPLE_LISTINGS;
