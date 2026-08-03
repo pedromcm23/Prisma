@@ -46,17 +46,35 @@ export async function createBooking(propertyId: string, startDateIso: string, en
     throw new Error("These dates are already booked.");
   }
 
-  // Create booking
-  const booking = await prisma.booking.create({
-    data: {
-      propertyId,
-      customerId: session.user.id,
-      startDate,
-      endDate,
-      totalPrice,
-      status: "CONFIRMED"
-    }
-  });
+  // Ensure property exists in the database for the foreign key constraint
+  const existingProp = await prisma.property.findUnique({ where: { id: propertyId } });
+  if (!existingProp) {
+    // It's a sample property that hasn't been saved to the DB yet.
+    // Create it under this user so the booking can proceed.
+    await prisma.property.create({
+      data: {
+        id: propertyId,
+        hostId: session.user.id,
+        name: propertyId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        description: "A beautiful stay automatically generated for this reservation.",
+      }
+    });
+  }
 
-  return booking;
+  // Create booking
+  try {
+    const booking = await prisma.booking.create({
+      data: {
+        propertyId,
+        customerId: session.user.id,
+        startDate,
+        endDate,
+        totalPrice,
+        status: "CONFIRMED"
+      }
+    });
+    return booking;
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to create reservation in the database.");
+  }
 }
