@@ -42,7 +42,7 @@ export default async function FlashDeals(props: {
 
     bookings.forEach(b => {
       if (b.startDate >= b.endDate) return;
-      const days = eachDayOfInterval({ start: b.startDate, end: subDays(b.endDate, 1) });
+      const days = eachDayOfInterval({ start: b.startDate, end: b.endDate });
       days.forEach(d => bookedDates.push(d.toISOString().split('T')[0]));
     });
   }
