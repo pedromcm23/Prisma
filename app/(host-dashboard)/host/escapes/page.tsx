@@ -43,7 +43,19 @@ export default async function FlashDeals(props: {
     bookings.forEach(b => {
       if (b.startDate >= b.endDate) return;
       const days = eachDayOfInterval({ start: b.startDate, end: b.endDate });
-      days.forEach(d => bookedDates.push(d.toISOString().split('T')[0]));
+      const stringDays = days.map(d => d.toISOString().split('T')[0]);
+      
+      stringDays.forEach(d => bookedDates.push(d));
+
+      // If the booking started as a flash deal (or contained a flash deal date), visually mark the whole stay as a flash deal (including checkout day)
+      const isFlashDealBooking = stringDays.some(d => initialSpontaneous.includes(d));
+      if (isFlashDealBooking) {
+        stringDays.forEach(d => {
+          if (!initialSpontaneous.includes(d)) {
+            initialSpontaneous.push(d);
+          }
+        });
+      }
     });
   }
 
