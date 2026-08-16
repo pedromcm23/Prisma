@@ -1,5 +1,7 @@
 # Prisma: Redefining Direct Booking and Authentic Hospitality Relationships
 
+![EIA 2026](https://img.shields.io/badge/Developed%20at-EIA%202026-000000?style=for-the-badge&logo=european-union)
+
 Prisma is a direct-booking platform designed to reconnect independent hosts and experience-driven travelers. By offering a direct alternative to legacy Online Travel Agencies (OTAs) like Booking.com and Airbnb, Prisma empowers hosts to bypass steep commission fees (which can range from 15.5% to 20% on traditional platforms) and build direct, authentic, and long-term customer relationships. 
 
 The application utilizes an organic marketing channel powered by a dual-mode system: **Host Mode**, where owners can spin up personalized direct-booking landing pages in under 20 minutes with zero design experience, and **Guest Mode**, which incentivizes guests to share their stays on social media through a dedicated **Social Rewards** system.
